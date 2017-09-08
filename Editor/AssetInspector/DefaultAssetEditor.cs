@@ -1,33 +1,35 @@
 ﻿using UnityEngine;
 using UnityEditor;
-
-[CanEditMultipleObjects]
-[CustomEditor(typeof(DefaultAsset))]
-public class DefaultAssetEditor : Editor
+namespace WZK
 {
-    private FolderAssetInspector folderAssetInspector;
-    private AssetBundleAssetInspector assetBundleAssetInspector;
-
-
-    void Awake()
+    [CanEditMultipleObjects]
+    [CustomEditor(typeof(DefaultAsset))]
+    public class DefaultAssetEditor : Editor
     {
-        folderAssetInspector = new FolderAssetInspector(targets);
-        assetBundleAssetInspector = new AssetBundleAssetInspector(targets);
-    }
+        private FolderAssetInspector folderAssetInspector;
+        private AssetBundleAssetInspector assetBundleAssetInspector;
 
-    void OnDestroy()
-    {
 
-    }
+        void Awake()
+        {
+            folderAssetInspector = new FolderAssetInspector(targets);
+            assetBundleAssetInspector = new AssetBundleAssetInspector(targets);
+        }
 
-    public override void OnInspectorGUI()
-    {
-        GUI.enabled = true;
+        void OnDestroy()
+        {
 
-        if(folderAssetInspector != null)
-            folderAssetInspector.OnInspectorGUI();
+        }
 
-        if(assetBundleAssetInspector != null)
-            assetBundleAssetInspector.OnInspectorGUI();
+        public override void OnInspectorGUI()
+        {
+            GUI.enabled = true;
+
+            if (folderAssetInspector != null)
+                folderAssetInspector.OnInspectorGUI();
+
+            if (assetBundleAssetInspector != null)
+                assetBundleAssetInspector.OnInspectorGUI();
+        }
     }
 }

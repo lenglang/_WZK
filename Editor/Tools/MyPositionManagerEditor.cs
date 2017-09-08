@@ -135,7 +135,7 @@ namespace WZK
             information._rotation = transform.rotation;
             information._localScale = transform.localScale;
         }
-        [MenuItem("GameObject/自定义/创建位置信息管理对象", false, MenuItemConfig.位置信息管理)]
+        [MenuItem("GameObject/WZK/创建位置信息管理对象", false, MenuItemConfig.位置信息管理)]
         private static void CreateSoundControlObject()
         {
             GameObject gameObject = new GameObject("位置信息管理");

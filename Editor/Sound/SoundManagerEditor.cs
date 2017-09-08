@@ -305,7 +305,7 @@ namespace WZK
             }
             if (_isExist == false) audioClipList.Add(ac);
         }
-        [MenuItem("GameObject/自定义/创建声音管理对象", false, MenuItemConfig.声音管理)]
+        [MenuItem("GameObject/WZK/创建声音管理对象", false, MenuItemConfig.声音管理)]
         private static void CreateSoundManagerObject()
         {
             GameObject gameObject = new GameObject("声音管理");

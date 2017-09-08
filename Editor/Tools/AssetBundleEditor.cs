@@ -9,12 +9,12 @@ namespace WZK
     /// </summary>
     public class AssetBundleEditor : Editor
     {
-        [MenuItem("AssetBundle/分别打包选中文件为AssetBundle-压缩")]
+        [MenuItem("WZK/AssetBundle/分别打包选中文件为AssetBundle-压缩")]
         static void BulidCompressedAssetBundle()
         {
             BuildAssetBundle();
         }
-        [MenuItem("AssetBundle/分别打包选中文件为AssetBundle-不压缩")]
+        [MenuItem("WZK/AssetBundle/分别打包选中文件为AssetBundle-不压缩")]
         static void BulidUncompressedAssetBundle()
         {
             BuildAssetBundle(false);
@@ -56,12 +56,12 @@ namespace WZK
 #endif
         }
 
-        [MenuItem("AssetBundle/打包选中文件为一个AssetBundle-压缩")]
+        [MenuItem("WZK/AssetBundle/打包选中文件为一个AssetBundle-压缩")]
         static void BulidCompressedAssetBundleAll()
         {
             BuildAll();
         }
-        [MenuItem("AssetBundle/打包选中文件为一个AssetBundle-不压缩")]
+        [MenuItem("WZK/AssetBundle/打包选中文件为一个AssetBundle-不压缩")]
         static void BulidUncompressedAssetBundleAll()
         {
             BuildAll(false);

@@ -122,7 +122,7 @@ namespace WZK
             }
             return false;
         }
-        [MenuItem("GameObject/自定义/创建显示隐藏管理", false, MenuItemConfig.显示隐藏管理)]
+        [MenuItem("GameObject/WZK/创建显示隐藏管理", false, MenuItemConfig.显示隐藏管理)]
         private static void CreateSoundControlObject()
         {
             GameObject gameObject = new GameObject("显示隐藏管理对象");

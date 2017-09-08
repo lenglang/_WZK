@@ -133,7 +133,7 @@ namespace WZK
             if (_isExist == false) objList.Add(new ResourcesScriptableObject.Config(obj, assetPath));
         }
 
-        [MenuItem("GameObject/自定义/创建合包资源管理对象", false, MenuItemConfig.合包资源管理)]
+        [MenuItem("GameObject/WZK/创建合包资源管理对象", false, MenuItemConfig.合包资源管理)]
         private static void CreateSoundManagerObject()
         {
             GameObject gameObject = new GameObject("合包资源管理");

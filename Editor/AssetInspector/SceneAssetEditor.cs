@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 using UnityEditor;
-
-[CanEditMultipleObjects]
-[CustomEditor(typeof(SceneAsset))]
-public class SceneAssetEditor : Editor
+namespace WZK
 {
-    public override void OnInspectorGUI()
+    [CanEditMultipleObjects]
+    [CustomEditor(typeof(SceneAsset))]
+    public class SceneAssetEditor : Editor
     {
-        GUI.enabled = true;
-
-        base.OnInspectorGUI();
-
-        if (GUILayout.Button("选择依赖"))
+        public override void OnInspectorGUI()
         {
-            EditorApplication.ExecuteMenuItem("Assets/Select Dependencies");
+            GUI.enabled = true;
+
+            base.OnInspectorGUI();
+
+            if (GUILayout.Button("查看依赖"))
+            {
+                EditorApplication.ExecuteMenuItem("Assets/Select Dependencies");
+            }
         }
     }
 }

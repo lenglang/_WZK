@@ -1,40 +1,41 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
-
-[CustomEditor(typeof(MonoScript))]
-
-public class MonoScriptEditor : Editor
+namespace WZK
 {
-    private string assetPath;
-
-    private string originalText;
-    private string modifiedText;
-
-    void Awake()
+    [CustomEditor(typeof(MonoScript))]
+    public class MonoScriptEditor : Editor
     {
-        GUI.enabled = true;
+        private string assetPath;
 
-        assetPath = AssetDatabase.GetAssetPath(target);
+        private string originalText;
+        private string modifiedText;
 
-        originalText = File.ReadAllText(assetPath);
-        modifiedText = originalText.Clone() as string;
-    }
-
-    void OnDestroy()
-    {
-        if (modifiedText != originalText)
+        void Awake()
         {
-            if (EditorUtility.DisplayDialog("", "是否保存 " + assetPath + " ？", "确定", "取消"))
+            GUI.enabled = true;
+
+            assetPath = AssetDatabase.GetAssetPath(target);
+
+            originalText = File.ReadAllText(assetPath);
+            modifiedText = originalText.Clone() as string;
+        }
+
+        void OnDestroy()
+        {
+            if (modifiedText != originalText)
             {
-                File.WriteAllText(assetPath, modifiedText);
-                AssetDatabase.Refresh();
+                if (EditorUtility.DisplayDialog("", "是否保存 " + assetPath + " ？", "确定", "取消"))
+                {
+                    File.WriteAllText(assetPath, modifiedText);
+                    AssetDatabase.Refresh();
+                }
             }
         }
-    }
 
-    public override void OnInspectorGUI()
-    {
-        modifiedText = EditorGUILayout.TextArea(modifiedText);
+        public override void OnInspectorGUI()
+        {
+            modifiedText = EditorGUILayout.TextArea(modifiedText);
+        }
     }
 }
