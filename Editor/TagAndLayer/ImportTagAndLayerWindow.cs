@@ -11,115 +11,78 @@ namespace WZK
         {
             EditorGUILayout.BeginHorizontal();
             _tagText=EditorGUILayout.TextField("Tag", _tagText);
-            if (GUILayout.Button("导入"))
-            {
-                List<string> tags = new List<string>();
-                tags.AddRange(UnityEditorInternal.InternalEditorUtility.tags);
-                tags.RemoveRange(0, 7);
-                string[] newTags = _tagText.Split(',');
-
-
-                for (int i = 0; i < newTags.Length; i++)
-                {
-                    if (tags.IndexOf(newTags[i]) == -1) tags.Add(newTags[i]);
-                }
-
-                SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-                SerializedProperty it = tagManager.GetIterator();
-                
-                while (it.NextVisible(true))
-                {
-                    if (it.name == "tags")
-                    {
-                        it.ClearArray();
-                        it.arraySize = tags.Count;
-                        for (int i = 0; i < it.arraySize; i++)
-                        {
-                            SerializedProperty dataPoint = it.GetArrayElementAtIndex(i);
-                            dataPoint.stringValue = tags[i];
-                        }
-                        tagManager.ApplyModifiedProperties();
-                    }
-                }
-            }
+            Add("tags", 7, _tagText);
             EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.BeginHorizontal();
             _layerText=EditorGUILayout.TextField("Layer", _layerText);
-            if (GUILayout.Button("导入"))
-            {
-                string[] layers = _layerText.Split(',');
-                for (int i = 0; i < layers.Length; i++)
-                {
-                    AddLayer(layers[i]);
-                }
-            }
+            Add("layers", 5, _layerText);
             EditorGUILayout.EndHorizontal();
         }
-        void AddTag(string tag)
+        private void Add(string type,int limit,string addText)
         {
-            if (!IsHasTag(tag))
+            if (GUILayout.Button("导入"))
             {
+                List<string> list = new List<string>();
+                if (type == "tags")
+                { list.AddRange(UnityEditorInternal.InternalEditorUtility.tags); }
+                else
+                {
+                    list.AddRange(UnityEditorInternal.InternalEditorUtility.layers);
+                }
+                list.RemoveRange(0, limit);
+                string[] addList = addText.Split(',');
+                for (int i = 0; i < addList.Length; i++)
+                {
+                    if (list.IndexOf(addList[i]) == -1) { list.Add(addList[i]); }
+                    else { Debug.LogError("添加的" + type + "集，存在相同字符,被自动过滤掉"); }
+                }
                 SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
                 SerializedProperty it = tagManager.GetIterator();
                 while (it.NextVisible(true))
                 {
-                    if (it.name == "tags")
+                    if (it.name == "tags"&&it.name==type)
                     {
+                        it.ClearArray();
+                        it.arraySize = list.Count;
                         for (int i = 0; i < it.arraySize; i++)
                         {
                             SerializedProperty dataPoint = it.GetArrayElementAtIndex(i);
-                            Debug.Log(dataPoint.stringValue);
-                            dataPoint.stringValue = tag;
+                            dataPoint.stringValue = list[i];
+                        }
+                        tagManager.ApplyModifiedProperties();
+                    }
+                    if (it.name == "layers" && it.name == type)
+                    {
+                        it.ClearArray();
+                        int start = 8;
+                        it.arraySize = start + list.Count;
+                        for (int i = start; i < it.arraySize; i++)
+                        {
+                            SerializedProperty dataPoint = it.GetArrayElementAtIndex(i);
+                            dataPoint.stringValue = list[i - start];
                         }
                         tagManager.ApplyModifiedProperties();
                     }
                 }
             }
-        }
-        void AddLayer(string layer)
-        {
-            if (!IsHasLayer(layer))
+            if (GUILayout.Button("清空") && EditorUtility.DisplayDialog("警告", "你确定要清空所有"+type+"吗？", "确定", "取消"))
             {
                 SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
                 SerializedProperty it = tagManager.GetIterator();
                 while (it.NextVisible(true))
                 {
-                    Debug.Log(it.name);
-                    if (it.name.StartsWith("User Layer"))
+                    if (it.name == "tags" && it.name == type)
                     {
-                        
-                        if (it.type == "string")
-                        {
-                            if (string.IsNullOrEmpty(it.stringValue))
-                            {
-                                it.stringValue = layer;
-                                tagManager.ApplyModifiedProperties();
-                                return;
-                            }
-                        }
+                        it.ClearArray();
+                        tagManager.ApplyModifiedProperties();
+                    }
+                    if (it.name == "layers" && it.name == type)
+                    {
+                        it.ClearArray();
+                        tagManager.ApplyModifiedProperties();
                     }
                 }
             }
-        }
-        bool IsHasTag(string tag)
-        {
-            for (int i = 0; i < UnityEditorInternal.InternalEditorUtility.tags.Length; i++)
-            {
-                if (UnityEditorInternal.InternalEditorUtility.tags[i].Contains(tag))
-                    return true;
-            }
-            return false;
-        }
-
-        bool IsHasLayer(string layer)
-        {
-            for (int i = 0; i < UnityEditorInternal.InternalEditorUtility.layers.Length; i++)
-            {
-                if (UnityEditorInternal.InternalEditorUtility.layers[i].Contains(layer))
-                    return true;
-            }
-            return false;
         }
     }
 }
