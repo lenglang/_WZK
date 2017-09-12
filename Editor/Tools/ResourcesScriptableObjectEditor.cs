@@ -3,7 +3,6 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-
 namespace WZK
 {
     [CustomEditor(typeof(ResourcesScriptableObject))]
@@ -18,7 +17,6 @@ namespace WZK
         public override void OnInspectorGUI()
         {
             _resourcesScriptableObject = target as ResourcesScriptableObject;
-            EditorGUILayout.LabelField("只允许拖文件夹！！！！！！！！！！！");
             int index = -1;
             for (int i = 0; i < _extensionList.Count; i++)
             {
@@ -37,10 +35,11 @@ namespace WZK
                 }
                 if((i>1&&i%4==3)||i==_extensionList.Count-1) EditorGUILayout.EndHorizontal();
             }
-            GUILayout.Space(30);
+            GUILayout.Space(10);
             if (_resourcesScriptableObject._choseExtensionList.Count == 0)
             {
                 EditorGUILayout.LabelField("没有选择指定的后缀，默认包含以上所有后缀！");
+                
             }
             else
             {
@@ -55,26 +54,39 @@ namespace WZK
                 }
                 EditorGUILayout.LabelField("选择的后缀:"+str);
             }
+            GUILayout.Space(10);
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("显示区间");
+            _resourcesScriptableObject._showMin = EditorGUILayout.IntField(_resourcesScriptableObject._showMin);
+            if (_resourcesScriptableObject._showMin < 1) _resourcesScriptableObject._showMin = 1;
+            GUILayout.Label("~");
+            _resourcesScriptableObject._showMax = EditorGUILayout.IntField(_resourcesScriptableObject._showMax);
+            if (_resourcesScriptableObject._showMax < _resourcesScriptableObject._showMin) _resourcesScriptableObject._showMax = _resourcesScriptableObject._showMin;
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
             List<ResourcesScriptableObject.Config> objList = _resourcesScriptableObject._objectList;
             for (int i = 0; i < objList.Count; i++)
             {
-                EditorGUILayout.BeginHorizontal();
-                objList[i]._object = (Object)EditorGUILayout.ObjectField("对象" + (i + 1), objList[i]._object, typeof(Object), false);
-                _isDelete = false;
-                if (GUILayout.Button("删除" + (i + 1)))
+                if (i >= _resourcesScriptableObject._showMin-1&& i < _resourcesScriptableObject._showMax)
                 {
-                    _isDelete = true;
+                    EditorGUILayout.BeginHorizontal();
+                    objList[i]._object = (Object)EditorGUILayout.ObjectField("对象" + (i + 1), objList[i]._object, typeof(Object), false);
+                    _isDelete = false;
+                    if (GUILayout.Button("删除" + (i + 1)))
+                    {
+                        _isDelete = true;
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    objList[i]._assetPath = EditorGUILayout.TextField("路径" + (i + 1), objList[i]._assetPath);
+                    GUILayout.Space(10);
+                    if (objList[i]._assetPath == "" && objList[i]._object) objList[i]._assetPath = objList[i]._object.name;
+                    if (_isDelete) objList.RemoveAt(i);
                 }
-                EditorGUILayout.EndHorizontal();
-                objList[i]._assetPath = EditorGUILayout.TextField("路径" + (i + 1), objList[i]._assetPath);
-                GUILayout.Space(10);
-                if (objList[i]._assetPath == "" && objList[i]._object) objList[i]._assetPath = objList[i]._object.name;
-                if (_isDelete) objList.RemoveAt(i);
             }
             if (Event.current.type == EventType.DragExited)
             {
-                Debug.Log(DragAndDrop.objectReferences[0].GetType());
-                if (DragAndDrop.objectReferences[0].GetType() == typeof(Texture2D) ||DragAndDrop.objectReferences[0].GetType() == typeof(AudioClip)|| DragAndDrop.objectReferences[0].GetType() == typeof(GameObject))
+                System.Type type = DragAndDrop.objectReferences[0].GetType();
+                if (type!=typeof(DefaultAsset))
                 {
                     AddObject(objList,DragAndDrop.objectReferences[0], DragAndDrop.paths[0]);
                 }
@@ -116,28 +128,44 @@ namespace WZK
         /// </summary>
         private void AddObject(List<ResourcesScriptableObject.Config> objList, Object obj, string assetPath)
         {
-            Debug.Log(obj.GetType());
+            //Sprite处理
+            if (assetPath.Contains(".png") || assetPath.Contains(".jpg"))
+            {
+                Object[] objects = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+                if (objects.Length >= 2)
+                {
+                    string tempPath = assetPath;
+                    for (int i = 1; i < objects.Length; i++)
+                    {
+                        assetPath = tempPath.Substring(0, tempPath.LastIndexOf("/")+1) + objects[i].name + tempPath.Substring(tempPath.IndexOf("."));
+                        JudgeExist(objList, objects[i], assetPath);
+                    }
+                    return;
+                }
+            }
+            JudgeExist(objList, obj, assetPath);
+        }
+        private void JudgeExist(List<ResourcesScriptableObject.Config> objList, Object obj, string assetPath)
+        {
             _isExist = false;
-            assetPath = assetPath.Substring(0, assetPath.IndexOf("."));
             assetPath = assetPath.Replace("\\", "/");
             for (int i = 0; i < objList.Count; i++)
             {
                 if (objList[i]._object == obj)
                 {
                     _isExist = true;
-                    objList[i]._assetPath = assetPath;
+                    objList[i]._assetPath = assetPath;//如果有移动更新最新的地址
                     Debug.LogError("配置表里已存在该对象");
                     break;
                 }
             }
             if (_isExist == false) objList.Add(new ResourcesScriptableObject.Config(obj, assetPath));
         }
-
-        [MenuItem("GameObject/WZK/创建合包资源管理对象", false, MenuItemConfig.合包资源管理)]
+        [MenuItem("GameObject/WZK/创建场景资源管理对象", false, MenuItemConfig.合包资源管理)]
         private static void CreateSoundManagerObject()
         {
-            GameObject gameObject = new GameObject("合包资源管理");
-            gameObject.AddComponent<MyResources>();
+            GameObject gameObject = new GameObject("场景资源管理");
+            gameObject.AddComponent<SceneResources>();
             EditorUtility.FocusProjectWindow();
             Selection.activeObject = gameObject;
             EditorGUIUtility.PingObject(Selection.activeObject);
