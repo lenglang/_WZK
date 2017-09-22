@@ -164,18 +164,20 @@ namespace WZK
                 }
                 else
                 {
-                    _directionPath = Application.dataPath;
-                    _directionPath = _directionPath.Substring(0, _directionPath.LastIndexOf("/") + 1) + DragAndDrop.paths[0];
-                    string[] strs = _directionPath.Split('.');
-                    if (strs.Length == 1 && Directory.Exists(_directionPath))
+                    if (DragAndDrop.objectReferences[0].GetType().ToString() == "UnityEditor.DefaultAsset")
                     {
-                        DirectoryInfo direction = new DirectoryInfo(_directionPath);
-                        FileInfo[] files = direction.GetFiles("*.mp3", SearchOption.AllDirectories);
-                        for (int i = 0; i < files.Length; i++)
+                        _directionPath = Application.dataPath;
+                        _directionPath = _directionPath.Substring(0, _directionPath.LastIndexOf("/") + 1) + DragAndDrop.paths[0];
+                        if (Directory.Exists(_directionPath))
                         {
-                            _fileAssetPath = files[i].DirectoryName;
-                            _fileAssetPath = _fileAssetPath.Substring(_fileAssetPath.IndexOf("Assets")) + "/" + files[i].Name;
-                            AddAudioClip(scList, AssetDatabase.LoadAssetAtPath<AudioClip>(_fileAssetPath), _fileAssetPath);
+                            DirectoryInfo direction = new DirectoryInfo(_directionPath);
+                            FileInfo[] files = direction.GetFiles("*", SearchOption.AllDirectories);
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                _fileAssetPath = files[i].DirectoryName;
+                                _fileAssetPath = _fileAssetPath.Substring(_fileAssetPath.IndexOf("Assets")) + "/" + files[i].Name;
+                                if (AssetDatabase.LoadAssetAtPath<AudioClip>(_fileAssetPath)) AddAudioClip(scList, AssetDatabase.LoadAssetAtPath<AudioClip>(_fileAssetPath), _fileAssetPath);
+                            }
                         }
                     }
                 }
