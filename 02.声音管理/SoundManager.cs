@@ -13,8 +13,9 @@ namespace WZK
             人声,
             音效
         }
-        [Header("背景音乐声音大小")]
-        public float _bgSoundVolume = 0.6f;
+        [Header("音频配置")]
+        public SoundConfig _soundConfig;
+        private float _bgSoundVolume = 0.6f;
         private List<Sound> _playingSoundList = new List<Sound>();
         private float _deltaTime;
         private Dictionary<string, AudioClip> _voiceDictionary = new Dictionary<string, AudioClip>();
@@ -35,20 +36,21 @@ namespace WZK
         void Awake()
         {
             _instance = this;
-            foreach (Config item in _voiceList)
+            _bgSoundVolume = _soundConfig._bgSoundVolume;
+            foreach (SoundConfig.Config item in _soundConfig._voiceList)
             {
                 _voiceDictionary.Add(item._desc, item._audioClip);
             }
-            foreach (Config item in _soundList)
+            foreach (SoundConfig.Config item in _soundConfig._soundList)
             {
                 _soundDictionary.Add(item._desc, item._audioClip);
             }
-            foreach (Config item in _musiceList)
+            foreach (SoundConfig.Config item in _soundConfig._musiceList)
             {
                 _musicDictionary.Add(item._desc, item._audioClip);
             }
             Debug.LogWarning("接入宝宝巴士框架，这里需给语言赋值，得到当前手机语言");
-            if (string.IsNullOrEmpty(_testLanguage) == false && SystemData.IsDebugBuild) SystemData.LANGUAGE = _testLanguage;
+            if (string.IsNullOrEmpty(_soundConfig._testLanguage) == false && SystemData.IsDebugBuild) SystemData.LANGUAGE = _soundConfig._testLanguage;
             if (SystemData.LANGUAGE != "zh")
             {
                 List<AudioClip> audioClipList = new List<AudioClip>();
@@ -91,9 +93,9 @@ namespace WZK
         /// <returns></returns>
         List<AudioClip> GetLanguageAudioClip(string language)
         {
-            for (int i = 0; i < _languageAudioClipList.Count; i++)
+            for (int i = 0; i < _soundConfig._languageAudioClipList.Count; i++)
             {
-                if (_languageAudioClipList[i]._language == language) return _languageAudioClipList[i]._audioClipList;
+                if (_soundConfig._languageAudioClipList[i]._language == language) return _soundConfig._languageAudioClipList[i]._audioClipList;
             }
             return null;
         }
@@ -320,8 +322,8 @@ namespace WZK
             {
                 if (x._isScaleTime == false)
                 {
-                //Time.unscaledDeltaTime 不考虑timescale时候与deltaTime相同，若timescale被设置，则无效。
-                _deltaTime = Time.unscaledDeltaTime;
+                    //Time.unscaledDeltaTime 不考虑timescale时候与deltaTime相同，若timescale被设置，则无效。
+                    _deltaTime = Time.unscaledDeltaTime;
                 }
                 else
                 {
@@ -340,45 +342,6 @@ namespace WZK
             DestroyAllSound();
             _instance = null;
         }
-        #region 声音配置
-        public string _savePath = "";//存储路径
-        public string _nameSpace = "";//命名空间
-        public string _fileName = "";//.cs配置文件名
-        public bool _isResources = false;//是否Resources下资源
-        public List<Config> _voiceList = new List<Config>();//人声列表
-        public string _voiceEnumType = "VoiceType";//人声枚举类型
-        public List<Config> _soundList = new List<Config>();//音效列表
-        public string _soundEnumType = "SoundType";//音效枚举类型
-        public List<Config> _musiceList = new List<Config>();//背景音乐列表
-        public string _musiceEnumType = "MusiceType";//背景音乐枚举类型
-        public int _choseLanguage = 0;//选择的国际化语言
-        public string _testLanguage = "";//测试语言
-        public List<string> _languageTypeList = new List<string>() { "zht", "en" };//其他语言类型
-        public List<LanguageAudioClip> _languageAudioClipList = new List<LanguageAudioClip>();//国际化音频
-        [System.Serializable]
-        public class Config
-        {
-            public AudioClip _audioClip;//声音源
-            public string _desc;//描述-用于枚举
-            public string _resourcesPath;//Resources下路径
-            public Config(AudioClip audioClip = null, string resourcesPath = "", string desc = "")
-            {
-                _audioClip = audioClip;
-                _resourcesPath = resourcesPath;
-                _desc = desc;
-            }
-        }
-        [System.Serializable]
-        public class LanguageAudioClip
-        {
-            public string _language = "";
-            public List<AudioClip> _audioClipList = new List<AudioClip>();
-            public LanguageAudioClip(string language)
-            {
-                _language = language;
-            }
-        }
-        #endregion
     }
 }
 

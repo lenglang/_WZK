@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 namespace WZK
 {
-    public class SceneResources:MonoBehaviour
+    public class SceneResources : MonoBehaviour
     {
         private static SceneResources _instance;
         public static SceneResources Instance
@@ -16,8 +16,8 @@ namespace WZK
         {
             _instance = null;
         }
-        [Header("场景资源")]
-        public ResourcesScriptableObject _sceneResources;
+        [Header("场景资源配置")]
+        public ResourcesConfig _resourcesConfig;
         /// <summary>
         /// 加载资源
         /// </summary>
@@ -29,16 +29,16 @@ namespace WZK
             if (name.Contains("/") == false)
             {
                 string str;
-                int count = _sceneResources._objectList.Count;
+                int count = _resourcesConfig._objectList.Count;
                 for (int i = 0; i < count; i++)
                 {
-                    str = _sceneResources._objectList[i]._assetPath;
+                    str = _resourcesConfig._objectList[i]._assetPath;
                     str = str.Substring(str.LastIndexOf("/") + 1);
                     if (name.Contains(".") == false) str = str.Substring(0, str.IndexOf("."));
-                    if (str == name) return (T)_sceneResources._objectList[i]._object;
+                    if (str == name) return (T)_resourcesConfig._objectList[i]._object;
                 }
             }
-            return (T)_sceneResources._objectList.Find(n => n._assetPath.Contains(name))._object;
+            return (T)_resourcesConfig._objectList.Find(n => n._assetPath.Contains(name))._object;
         }
     }
 }

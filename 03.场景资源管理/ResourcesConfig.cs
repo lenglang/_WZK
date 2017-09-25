@@ -2,8 +2,8 @@
 using UnityEngine;
 namespace WZK
 {
-    [CreateAssetMenu(fileName = "场景资源", menuName = "创建场景序列化资源")]
-    public class ResourcesScriptableObject : ScriptableObject
+    [CreateAssetMenu(fileName = "xxx场景资源", menuName = "创建场景序列化资源")]
+    public class ResourcesConfig : ScriptableObject
     {
         public List<Config> _objectList = new List<Config>();
         public List<string> _choseExtensionList = new List<string>();//扩展名
