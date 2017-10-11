@@ -23,9 +23,9 @@ namespace WZK
             }
         }
         /// <summary>
-        /// 等待动作字典
+        /// 等待动作列表
         /// </summary>
-        private Dictionary<T, WaitActionParameter> _waitActionDictionary = new Dictionary<T, WaitActionParameter>();
+        private List<WaitActionParameter> _waitActionParameterList = new List<WaitActionParameter>();
         /// <summary>
         /// 添加等待动作
         /// </summary>
@@ -34,18 +34,8 @@ namespace WZK
         /// <param name="waitTime">等待时间</param>
         public void AddWaitAction(Action action, float waitTime, T type = default(T))
         {
-            if (HasKey(type)) return;
-            WaitActionParameter wp = new WaitActionParameter(action, waitTime);
-            _waitActionDictionary.Add(type, wp);
-        }
-        /// <summary>
-        /// 是否包含Key
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public bool HasKey(T type)
-        {
-            return _waitActionDictionary.ContainsKey(type);
+            WaitActionParameter wp = new WaitActionParameter(action, waitTime,type);
+            _waitActionParameterList.Add(wp);
         }
         /// <summary>
         /// 移除等待动作
@@ -53,41 +43,50 @@ namespace WZK
         /// <param name="type">动作类型</param>
         public void RemoveWaitAction(T type)
         {
-            if (HasKey(type) == false) return;
-            _waitActionDictionary.Remove(type);
+            for (int i = 0; i < _waitActionParameterList.Count; i++)
+            {
+                if (_waitActionParameterList[i]._type == null) continue;
+                if (_waitActionParameterList[i]._type.ToString() == type.ToString())
+                {
+                    _waitActionParameterList.RemoveAt(i);
+                    break;
+                }
+            }
         }
         /// <summary>
         /// 移除所有等待动作
         /// </summary>
         public void RemoveAllWaitAction()
         {
-            _waitActionDictionary.Clear();
+            _waitActionParameterList.Clear();
             instance = null;
         }
         public void FixedUpdate()
         {
-            WaitActionParameter wp;
-            foreach (KeyValuePair<T, WaitActionParameter> item in _waitActionDictionary)
+
+            for (int i = _waitActionParameterList.Count-1; i>=0; i--)
             {
-                wp = item.Value;
-                if (Time.time - wp._time >= wp._waitTime)
+                if (Time.time - _waitActionParameterList[i]._time >= _waitActionParameterList[i]._waitTime)
                 {
-                    wp._action();
-                    _waitActionDictionary.Remove(item.Key);
+                    _waitActionParameterList[i]._action();
+                    _waitActionParameterList.RemoveAt(i);
                 }
             }
         }
-    }
-    public class WaitActionParameter
-    {
-        public Action _action;
-        public float _time;
-        public float _waitTime;
-        public WaitActionParameter(Action action, float waitTime)
+        public class WaitActionParameter
         {
-            _action = action;
-            _waitTime = waitTime;
-            _time = Time.time;
+            public Action _action;
+            public float _time;
+            public float _waitTime;
+            public T _type;
+            public WaitActionParameter(Action action, float waitTime, T type)
+            {
+                _action = action;
+                _waitTime = waitTime;
+                _time = Time.time;
+                _type = type;
+            }
         }
     }
+    
 }

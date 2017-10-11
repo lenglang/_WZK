@@ -23,9 +23,9 @@ namespace WZK
             }
         }
         /// <summary>
-        /// 循环动作字典
+        /// 循环动作列表
         /// </summary>
-        private Dictionary<T, LoopActionParameter> _loopActionDictionary = new Dictionary<T, LoopActionParameter>();
+        private List<LoopActionParameter> _loopActionParameterList = new List<LoopActionParameter>();
         /// 添加循环动作
         /// </summary>
         /// <param name="action">动作</param>
@@ -37,19 +37,9 @@ namespace WZK
         /// <param name="times">循环次数，默认-1即无限循环</param>
         public void AddLoopAction(Action action, float interval, T type = default(T), bool isDoNow = true, float interval2 = 0, float add = 0, int times = -1)
         {
-            if (HasKey(type)) return;
-            LoopActionParameter lp = new LoopActionParameter(action, interval, times, interval2, add);
-            _loopActionDictionary.Add(type, lp);
+            LoopActionParameter lp = new LoopActionParameter(action, interval,type,times, interval2, add);
+            _loopActionParameterList.Add(lp);
             if (isDoNow) action();
-        }
-        /// <summary>
-        /// 是否包含Key
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public bool HasKey(T type)
-        {
-            return _loopActionDictionary.ContainsKey(type);
         }
         /// <summary>
         /// 移除某个循环动作
@@ -57,23 +47,30 @@ namespace WZK
         /// <param name="actionName"></param>
         public void RemoveLoopAction(T type)
         {
-            if (HasKey(type) == false) return;
-            _loopActionDictionary.Remove(type);
+            for (int i = 0; i < _loopActionParameterList.Count; i++)
+            {
+                if (_loopActionParameterList[i]._type == null) continue;
+                if (_loopActionParameterList[i]._type.ToString() == type.ToString())
+                {
+                    _loopActionParameterList.RemoveAt(i);
+                    break;
+                }
+            }
         }
         /// <summary>
         /// 移除所有循环动作
         /// </summary>
         public void RemoveAllLoopAction()
         {
-            _loopActionDictionary.Clear();
+            _loopActionParameterList.Clear();
             instance = null;
         }
         public void FixedUpdate()
         {
             LoopActionParameter lp;
-            foreach (KeyValuePair<T, LoopActionParameter> item in _loopActionDictionary)
+            for (int i = _loopActionParameterList.Count - 1; i >= 0; i--)
             {
-                lp = item.Value;
+                lp = _loopActionParameterList[i];
                 if (Time.time - lp._time >= lp._interval)
                 {
                     lp._countTimes++;
@@ -84,32 +81,34 @@ namespace WZK
                     if (lp._times > 0)
                     {
                         lp._times--;
-                        if (lp._times == 0) _loopActionDictionary.Remove(item.Key);
+                        if (lp._times == 0) _loopActionParameterList.RemoveAt(i);
                     }
                 }
             }
         }
-    }
-    /// <summary>
-    /// 循环动作参数类
-    /// </summary>
-    public class LoopActionParameter
-    {
-        public Action _action;
-        public float _time;
-        public float _interval;
-        public int _times;
-        public float _interval2;
-        public float _add;
-        public float _countTimes = 0;
-        public LoopActionParameter(Action action, float interval, int times, float interval2, float add)
+        /// <summary>
+        /// 循环动作参数类
+        /// </summary>
+        public class LoopActionParameter
         {
-            _action = action;
-            _interval = interval;
-            _time = Time.time;
-            _times = times;
-            _interval2 = interval2;
-            _add = add;
+            public Action _action;
+            public float _time;
+            public float _interval;
+            public int _times;
+            public float _interval2;
+            public float _add;
+            public float _countTimes = 0;
+            public T _type;
+            public LoopActionParameter(Action action, float interval, T type, int times, float interval2, float add)
+            {
+                _action = action;
+                _interval = interval;
+                _type = type;
+                _times = times;
+                _interval2 = interval2;
+                _add = add;
+                _time = Time.time;
+            }
         }
     }
 }
