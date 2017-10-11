@@ -6,12 +6,13 @@ public class UGUISpriteAnimation : MonoBehaviour
     private Image ImageSource;
     private int mCurFrame = 0;
     private float mDelta = 0;
-    public float FPS = 5;
-    public List<Sprite> SpriteFrames;
+    public float _time = 0.2f;
     public bool IsPlaying = false;
     public bool Foward = true;
     public bool AutoPlay = false;
     public bool Loop = false;
+    public bool _isSetNativeSize = true;
+    public List<Sprite> SpriteFrames;
     public int FrameCount
     {
         get
@@ -27,6 +28,7 @@ public class UGUISpriteAnimation : MonoBehaviour
     {
         if (AutoPlay)
         {
+            SetSprite(0);
             Play();
         }
         else
@@ -38,7 +40,7 @@ public class UGUISpriteAnimation : MonoBehaviour
     {
         ImageSource.sprite = SpriteFrames[idx];
         //该部分为设置成原始图片大小，如果只需要显示Image设定好的图片大小，注释掉该行即可。
-        ImageSource.SetNativeSize();
+        if(_isSetNativeSize)ImageSource.SetNativeSize();
     }
     public void Play()
     {
@@ -57,7 +59,7 @@ public class UGUISpriteAnimation : MonoBehaviour
             return;
         }
         mDelta += Time.deltaTime;
-        if (mDelta > 1 / FPS)
+        if (mDelta > _time)
         {
             mDelta = 0;
             if (Foward)
