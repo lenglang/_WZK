@@ -53,7 +53,7 @@ namespace WZK
         {
             _pointerEventData = evenData;
             if (_onDownAny != null) _onDownAny(gameObject);
-            if (_isDown || _isDrag == false) return;
+            if (_isDown || _isDrag == false || _draging) return;
             if (_onDownBefore != null) _onDownBefore(gameObject);
             UpdateOffset(evenData);
             _isDown = true;
