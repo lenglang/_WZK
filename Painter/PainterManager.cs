@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using WZK;
 using System.Collections.Generic;
-namespace Repairshop.Repair
+namespace WZK
 {
-    public class PainterManager:MonoBehaviour
+    public class PainterManager : MonoBehaviour
     {
         public enum EventType
         {
@@ -13,11 +12,11 @@ namespace Repairshop.Repair
         [Header("笔刷")]
         public GameObject _brush;
         [Header("RenderTexture")]
-        public List<RenderTexture> _renderTextureList=new List<RenderTexture>();
+        public List<RenderTexture> _renderTextureList = new List<RenderTexture>();
         [Header("相机")]
-        public List<Camera> _cameraList=new List<Camera>();
+        public List<Camera> _cameraList = new List<Camera>();
         [Header("色块")]
-        public List<GameObject> _quadList=new List<GameObject>();
+        public List<GameObject> _quadList = new List<GameObject>();
         [Header("彩色笔刷大小")]
         public float _brushScale = 1;//彩色笔刷缩放比
         [Header("绘制个数限制")]
@@ -25,15 +24,19 @@ namespace Repairshop.Repair
         [Header("碰撞射线发射相机")]
         public Camera _camera;
         [Header("层级")]
-        public string _layer="Model";
+        public string _layer = "Default";
         private List<GameObject> _brushList = new List<GameObject>();//笔刷列表
         private List<GameObject> _brushPool = new List<GameObject>();//笔刷对象池
-        private List<Material> _materialList = new List<Material>();//材质列表
+        [HideInInspector]
+        public List<Material> _materialList = new List<Material>();//材质列表
         private Camera _currentCamera;//图片相机
-        private RenderTexture _currentRenderTexture;//当前RenderTexture
-        private Material _currentMaterial;//当前材质
+        [HideInInspector]
+        public RenderTexture _currentRenderTexture;//当前RenderTexture
+        [HideInInspector]
+        public Material _currentMaterial;//当前材质
         private int _brushCount = 0;//绘制的个数
-        private int _uvIndex;//uv索引
+        [HideInInspector]
+        public int _uvIndex;//uv索引
         private Vector3 _hitPosition = Vector3.one;
         private void Awake()
         {
@@ -44,7 +47,7 @@ namespace Repairshop.Repair
             SetData(0);
             _uvIndex = 1;//默认用第一套
         }
-        private void SetData(int index)
+        public void SetData(int index)
         {
             _currentCamera = _cameraList[index];
             _currentRenderTexture = _renderTextureList[index];
@@ -59,20 +62,13 @@ namespace Repairshop.Repair
             _brush.GetComponent<SpriteRenderer>().color = color;
         }
         /// <summary>
-        /// 设置索引
-        /// </summary>
-        public void SetIndex(int index,int uvIndex=1)
-        {
-            SaveTexture();
-            _uvIndex = uvIndex;
-            SetData(index);
-        }
-        /// <summary>
         /// 绘制
         /// </summary>
-        public void DoAction(Vector3 hitPosition)
+        public void DoAction(Vector3 screenPos = default(Vector3))
         {
-            _hitPosition = hitPosition;
+            screenPos = Input.mousePosition;
+            if (screenPos != default(Vector3))
+            { _hitPosition = screenPos; }
             Vector3 uvWorldPosition = Vector3.zero;
             GameObject brushObj;
             if (HitTestUVPosition(ref uvWorldPosition))
@@ -109,13 +105,14 @@ namespace Repairshop.Repair
             Vector3 cursorPos = new Vector3(_hitPosition.x, _hitPosition.y, 0.0f);
             if (_camera == null) _camera = Camera.main;
             Ray cursorRay = _camera.ScreenPointToRay(cursorPos);
+            //Debug.DrawLine(cursorRay.origin, cursorRay.direction * 100f, Color.red);
             if (Physics.Raycast(cursorRay, out hit, 200, LayerMask.GetMask(_layer)))
             {
                 MeshCollider meshCollider = hit.collider as MeshCollider;
                 if (meshCollider == null || meshCollider.sharedMesh == null)
                     return false;
                 Vector2 pixelUV;
-                if (_uvIndex==2)
+                if (_uvIndex == 2)
                 {
                     pixelUV = new Vector2(hit.textureCoord2.x, hit.textureCoord2.y);//获取的是二套UV
                 }
@@ -136,7 +133,7 @@ namespace Repairshop.Repair
         /// <summary>
         /// 保存图片
         /// </summary>
-        void SaveTexture()
+        public void SaveTexture()
         {
             if (_brushCount == 0) return;
             _brushCount = 0;
@@ -161,19 +158,16 @@ namespace Repairshop.Repair
         /// </summary>
         public void CleanBrush()
         {
-            SaveTexture();
             for (int i = 0; i < _brushPool.Count; i++)
             {
                 Destroy(_brushPool[i]);
             }
             _brushPool.Clear();
-        }
-        /// <summary>
-        /// 绘制结束
-        /// </summary>
-        public void PainterEnd()
-        {
-            CleanBrush();
+            for (int i = 0; i < _brushList.Count; i++)
+            {
+                Destroy(_brushList[i]);
+            }
+            _brushList.Clear();
         }
 #if !UNITY_WEBPLAYER
         IEnumerator SaveTextureToFile(Texture2D savedTexture)
