@@ -67,6 +67,12 @@ namespace WZK
             _eventDictionary[eventKey] = null;
             _eventDictionary.Remove(eventKey);
         }
+        public void RemoveListener(T1 eventKey,UnityAction action)
+        {
+            if (!_eventDictionary.ContainsKey(eventKey))
+                return;
+            _eventDictionary[eventKey].RemoveListener(action);
+        }
         /// <summary>
         /// 移除所有事件
         /// </summary>
