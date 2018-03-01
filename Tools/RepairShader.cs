@@ -7,11 +7,31 @@ namespace WZK
 {
     public class RepairShader : MonoBehaviour
     {
+        private static RepairShader _instance=null;
+        /// <summary>
+        /// 创建
+        /// </summary>
+        public static  void Create()
+        {
+            if (_instance == null)
+            {
+                _instance = new GameObject("修复Shader").AddComponent<RepairShader>();
+                DontDestroyOnLoad(_instance.gameObject);
+            }
+        }
+        /// <summary>
+        /// 移除
+        /// </summary>
+        public static void Remove()
+        {
+            Destroy(_instance.gameObject);
+            _instance = null;
+        }
         private float currentTime;
 #if UNITY_EDITOR
         void Update()
         {
-            if (Time.realtimeSinceStartup - currentTime > 2f)
+            if (Time.realtimeSinceStartup - currentTime > 0.5f)
             {
                 currentTime = Time.realtimeSinceStartup;
                 BackShader();
