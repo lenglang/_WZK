@@ -9,10 +9,10 @@ namespace Babybus.Repairshop
 {
     public class SetAllSelectNamespaceEditor : Editor
     {
-        [MenuItem("IOSPacker/批量修改名空间")]
+        [MenuItem("批量修改名空间/修改")]
         static void SetAllSelectNamespace()
         {
-            string setedNamespace = "Babybus.Repairshop";
+            string setedNamespace = "WZK";
             StringBuilder stringBuilder;
             if (Selection.objects.Length == 0)
                 return;
