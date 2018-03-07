@@ -5,11 +5,11 @@ namespace WZK
 {
     /// <summary>
     /// 事件监听
-    /// 注意事项：1.场景需添加EventSystem；2.摄像机需挂载PhysicsRaycaster脚本；3.监听对象需要挂载BoxCollider组件
+    /// 注意事项：1.场景需添加EventSystem；2.3D对象摄像机需挂载PhysicsRaycaster脚本；3.3D对象监听需要挂载BoxCollider组件
     /// </summary>
     public class EventTriggerListener : EventTrigger
     {
-        public delegate void VoidDelegate(PointerEventData evenData, GameObject obj);
+        public delegate void VoidDelegate(PointerEventData evenData, GameObject obj,EventTriggerListener etl);
         public VoidDelegate _onClick;
         public VoidDelegate _onDown;
         public VoidDelegate _onEnter;
@@ -21,13 +21,13 @@ namespace WZK
         public VoidDelegate _onEndDrag;
         public VoidDelegate _onInitializePotentialDrag;
         public VoidDelegate _onScroll;
-        public delegate void VoidDelegate2(BaseEventData evenData, GameObject obj);
+        public delegate void VoidDelegate2(BaseEventData evenData, GameObject obj, EventTriggerListener etl);
         public VoidDelegate2 _onSelect;
         public VoidDelegate2 _onUpdateSelect;
         public VoidDelegate2 _onSubmit;
         public VoidDelegate2 _onCancel;
         public VoidDelegate2 _onDeselect;
-        public delegate void VoidDelegate3(AxisEventData evenData, GameObject obj);
+        public delegate void VoidDelegate3(AxisEventData evenData, GameObject obj, EventTriggerListener etl);
         public VoidDelegate3 _onMove;
         static public EventTriggerListener Get(GameObject go)
         {
@@ -60,71 +60,71 @@ namespace WZK
         }
         public override void OnSubmit(BaseEventData eventData)
         {
-            if (_onSubmit != null) _onSubmit(eventData, gameObject);
+            if (_onSubmit != null) _onSubmit(eventData, gameObject,this);
         }
         public override void OnPointerClick(PointerEventData eventData)
         {
-            if (_onClick != null) _onClick(eventData, gameObject);
+            if (_onClick != null) _onClick(eventData, gameObject, this);
         }
         public override void OnPointerDown(PointerEventData eventData)
         {
-            if (_onDown != null) _onDown(eventData, gameObject);
+            if (_onDown != null) _onDown(eventData, gameObject, this);
         }
         public override void OnPointerEnter(PointerEventData eventData)
         {
-            if (_onEnter != null) _onEnter(eventData, gameObject);
+            if (_onEnter != null) _onEnter(eventData, gameObject, this);
         }
         public override void OnPointerExit(PointerEventData eventData)
         {
-            if (_onExit != null) _onExit(eventData, gameObject);
+            if (_onExit != null) _onExit(eventData, gameObject, this);
         }
         public override void OnPointerUp(PointerEventData eventData)
         {
-            if (_onUp != null) _onUp(eventData, gameObject);
+            if (_onUp != null) _onUp(eventData, gameObject, this);
         }
         public override void OnSelect(BaseEventData eventData)
         {
-            if (_onSelect != null) _onSelect(eventData, gameObject);
+            if (_onSelect != null) _onSelect(eventData, gameObject, this);
         }
         public override void OnUpdateSelected(BaseEventData eventData)
         {
-            if (_onUpdateSelect != null) _onUpdateSelect(eventData, gameObject);
+            if (_onUpdateSelect != null) _onUpdateSelect(eventData, gameObject, this);
         }
         public override void OnBeginDrag(PointerEventData eventData)
         {
-            if (_onBeginDrag != null) _onBeginDrag(eventData, gameObject);
+            if (_onBeginDrag != null) _onBeginDrag(eventData, gameObject, this);
         }
         public override void OnCancel(BaseEventData eventData)
         {
-            if (_onCancel != null) _onCancel(eventData, gameObject);
+            if (_onCancel != null) _onCancel(eventData, gameObject, this);
         }
         public override void OnDeselect(BaseEventData eventData)
         {
-            if (_onDeselect != null) _onDeselect(eventData, gameObject);
+            if (_onDeselect != null) _onDeselect(eventData, gameObject, this);
         }
         public override void OnDrag(PointerEventData eventData)
         {
-            if (_onDrag != null) _onDrag(eventData, gameObject);
+            if (_onDrag != null) _onDrag(eventData, gameObject, this);
         }
         public override void OnDrop(PointerEventData eventData)
         {
-            if (_onDrop != null) _onDrop(eventData, gameObject);
+            if (_onDrop != null) _onDrop(eventData, gameObject, this);
         }
         public override void OnEndDrag(PointerEventData eventData)
         {
-            if (_onEndDrag != null) _onEndDrag(eventData, gameObject);
+            if (_onEndDrag != null) _onEndDrag(eventData, gameObject, this);
         }
         public override void OnInitializePotentialDrag(PointerEventData eventData)
         {
-            if (_onInitializePotentialDrag != null) _onInitializePotentialDrag(eventData, gameObject);
+            if (_onInitializePotentialDrag != null) _onInitializePotentialDrag(eventData, gameObject, this);
         }
         public override void OnMove(AxisEventData eventData)
         {
-            if (_onMove != null) _onMove(eventData, gameObject);
+            if (_onMove != null) _onMove(eventData, gameObject, this);
         }
         public override void OnScroll(PointerEventData eventData)
         {
-            if (_onScroll != null) _onScroll(eventData, gameObject);
+            if (_onScroll != null) _onScroll(eventData, gameObject, this);
         }
     }
 }
