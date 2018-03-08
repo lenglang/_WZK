@@ -6,8 +6,7 @@ namespace WZK
     /// <summary>
     /// 作者-wzk
     /// 功能-3D物体拖拽
-    /// 使用说明-直接以组件形式添加到物体上，通过设置_isDrag的bool值来开启和禁用3D物体拖拽功能，设置_camera来指定照射相机
-    /// 注意事项-场景需添加EventSystem事件系统，照射相机需添加物理射线，3D物体需有Collider相关组件
+    /// 使用说明-直接以组件形式添加到物体上设置_camera来指定照射相机，场景需添加EventSystem事件系统，照射相机需添加物理射线，3D物体需有Collider相关组件
     /// </summary>
     [AddComponentMenu("Common/Gestures/DragGestures3D")]
     public class DragGestures3D : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -16,48 +15,25 @@ namespace WZK
         public Camera _camera;//照射相机
         private Camera _currentCamera;//当前相机
         [HideInInspector]
-        public bool _isDrag = true;//是否可以拖拽
-        [HideInInspector]
         public PointerEventData _pointerEventData;//事件数据
         [HideInInspector]
         public Vector3 _offset;//偏移点
         [HideInInspector]
         public Transform _moveOutJudgePoint;//移动出判断点
         [HideInInspector]
-        public bool _isDown = false;//是否按下
-        [HideInInspector]
         public Rect _rectEdge = new Rect(0, 0, 0, 0);//边缘
-        public Action<GameObject> _onDownBefore;//按下前委托动作
-        public Action<GameObject> _onDown;//按下委托动作
-        public Action<GameObject> _onBeginDrag;//开始拖拽委托动作
-        public Action<GameObject> _onDrag;//拖拽中委托动作
-        public Action<GameObject> _onEndDrag;//结束拖拽委托动作
-        public Action<GameObject> _onDownAny;//按下不受影响
-        public Action<GameObject> _onUpAny;//弹起不受影响
+        public Action<GameObject, DragGestures3D> _onDownBefore;//按下前委托动作
+        public Action<GameObject, DragGestures3D> _onDown;//按下委托动作
+        public Action<GameObject, DragGestures3D> _onBeginDrag;//开始拖拽委托动作
+        public Action<GameObject, DragGestures3D> _onDrag;//拖拽中委托动作
+        public Action<GameObject, DragGestures3D> _onEndDrag;//结束拖拽委托动作
         private Vector3 _lastPosition;//上一个位置
         private Vector3 _screenSpace;//屏幕坐标
-        private bool _draging = false;//是否拖拽中
+        private bool _isDraging = false;//是否拖拽中
+        private bool _isDown = false;//是否按下
         private void Awake()
         {
             _moveOutJudgePoint = transform.FindChild("移出判断点");
-        }
-        /// <summary>
-        /// 状态初始
-        /// </summary>
-        public void InIt()
-        {
-            _isDown = false;
-            _draging = false;
-        }
-        public void OnPointerDown(PointerEventData evenData)
-        {
-            _pointerEventData = evenData;
-            if (_onDownAny != null) _onDownAny(gameObject);
-            if (_isDown || _isDrag == false || _draging) return;
-            if (_onDownBefore != null) _onDownBefore(gameObject);
-            UpdateOffset(evenData);
-            _isDown = true;
-            if (_onDown != null) _onDown(gameObject);
         }
         /// <summary>
         /// 对焦到鼠标点
@@ -68,9 +44,15 @@ namespace WZK
             _screenSpace = GetCamera().WorldToScreenPoint(transform.position);
             transform.position = GetCamera().ScreenToWorldPoint(new Vector3(_pointerEventData.position.x, _pointerEventData.position.y, _screenSpace.z)) + _offset;
         }
-        /// <summary>
-        /// 更新差值
-        /// </summary>
+        public void OnPointerDown(PointerEventData evenData)
+        {
+            if (IsOther(evenData)) return;
+            _isDown = true;
+            _pointerEventData = evenData;
+            if (_onDownBefore != null) _onDownBefore(gameObject,this);
+            UpdateOffset(evenData);
+            if (_onDown != null) _onDown(gameObject,this);
+        }
         public void UpdateOffset(PointerEventData evenData)
         {
             _screenSpace = GetCamera().WorldToScreenPoint(transform.position);
@@ -78,16 +60,33 @@ namespace WZK
         }
         public void OnBeginDrag(PointerEventData evenData)
         {
-            if (_isDown == false || _isDrag == false) return;
-            _draging = true;
+            if (IsOther(evenData)) return;
+            _isDraging = true;
             UpdatePosition(evenData);
-            if (_onBeginDrag != null) _onBeginDrag(gameObject);
+            if (_onBeginDrag != null) _onBeginDrag(gameObject,this);
         }
         public void OnDrag(PointerEventData evenData)
         {
-            if (_isDown == false || _isDrag == false) return;
+            if (IsOther(evenData)) return;
             UpdatePosition(evenData);
-            if (_onDrag != null) _onDrag(gameObject);
+            if (_onDrag != null) _onDrag(gameObject,this);
+        }
+        public void OnEndDrag(PointerEventData evenData)
+        {
+            if (IsOther(evenData)) return;
+            _isDraging = false;
+            _pointerEventData = evenData;
+            if (_onEndDrag != null) _onEndDrag(gameObject,this);
+        }
+        public void OnPointerUp(PointerEventData evenData)
+        {
+            if (IsOther(evenData)) return;
+            _isDown = false;
+            _pointerEventData = evenData;
+            if (_isDraging == false)
+            {
+                if (_onEndDrag != null) _onEndDrag(gameObject,this);
+            }
         }
         public void UpdatePosition(PointerEventData evenData)
         {
@@ -106,36 +105,19 @@ namespace WZK
                 }
             }
         }
-        public void OnEndDrag(PointerEventData evenData)
+        /// <summary>
+        /// 是否别的手指
+        /// </summary>
+        /// <param name="evenData"></param>
+        /// <returns></returns>
+        public bool IsOther(PointerEventData evenData)
         {
-            //有拖动才会执行
-            if (_draging == false || _isDrag == false) return;
-            _draging = false;
-            _pointerEventData = evenData;
-            if (_onEndDrag != null) _onEndDrag(gameObject);
-        }
-        public void OnPointerUp(PointerEventData evenData)
-        {
-            if (_onUpAny != null) _onUpAny(gameObject);
-            if (_isDown == false || _isDrag == false) return;
-            _isDown = false;
-            _pointerEventData = evenData;
-            if (_draging == false)
-            {
-                if (_onEndDrag != null) _onEndDrag(gameObject);
-            }
-        }
-        void OnApplicationPause(bool isPause)
-        {
-            if (isPause)
-            {
-                //游戏暂停-缩到桌面的时候触发
-            }
-            else
-            {
-                //游戏开始-回到游戏的时候触发
-                if (_onEndDrag != null && _isDown && _isDrag) _onEndDrag(gameObject);
-            }
+#if UNITY_EDITOR
+            if (evenData.pointerId != -1) return true;
+#else
+            if (evenData.pointerId != 0) return true;
+#endif
+            return false;
         }
         /// <summary>
         /// 获取相机
@@ -158,6 +140,23 @@ namespace WZK
                 _currentCamera = _camera;
             }
             return _currentCamera;
+        }
+        void OnApplicationPause(bool isPause)
+        {
+            if (isPause)
+            {
+                //游戏暂停-缩到桌面的时候触发
+            }
+            else
+            {
+                //游戏开始-回到游戏的时候触发
+                if (_onEndDrag != null && _isDown)
+                {
+                    _isDraging = false;
+                    _isDown = false;
+                    _onEndDrag(gameObject, this);
+                }
+            }
         }
     }
 }
