@@ -52,13 +52,16 @@ namespace WZK
             return maxDuration;
         }
         /// <summary>
-        /// 从屏幕位置点发送射线是否碰撞到该物体-用于拖拽物体的碰撞检测
+        /// 从屏幕位置点（鼠标位置点、3D物体转屏幕点）发送射线是否碰撞到该物体-用于拖拽物体的碰撞检测
+        /// 传值:
+        /// 1.obj._pointerEventData.position;鼠标位置点
+        /// 2.Vector3 p = _otherCamera.WorldToScreenPoint(obj.transform.position);物体在其他相机(好像也可以直接用第一种方式)
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="position">屏幕位置点</param>
         /// <param name="camera"></param>
         /// <returns></returns>
-        public static bool IsRayHit(this GameObject obj, Vector2 position, Camera camera = null, string layer = "")
+        public static bool IsRayHit(this GameObject obj, Vector2 position, Camera camera = null,int layerIndex = 0)
         {
             Ray ray;
             if (camera == null)
@@ -74,77 +77,29 @@ namespace WZK
             {
                 ray = camera.ScreenPointToRay(position);
             }
-            Debug.DrawLine(ray.origin, ray.direction * 10f, Color.red);
+            Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
-            if (string.IsNullOrEmpty(layer))
+            if (Physics.Raycast(ray, out hit, 1000f,layerIndex))
             {
-                if (Physics.Raycast(ray, out hit, 100f))
+                if (hit.collider.gameObject == obj)
                 {
-                    return hit.collider.gameObject == obj;
+                    return true;
                 }
-            }
-            else
-            {
-                if (Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask(layer)))
+                else
                 {
-                    return hit.collider.gameObject == obj;
+                    Debug.Log(hit.collider);
                 }
             }
             return false;
         }
         /// <summary>
-        /// 3D两点之间发射线
+        /// 相机到3D位置点发射线检测
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="position"></param>
         /// <param name="camera"></param>
         /// <returns></returns>
-        public static bool IsRayHit3D(this GameObject obj, Vector3 position, Camera camera = null,string layer="")
-        {
-
-            Ray ray;
-            if (camera == null)
-            {
-                if (Camera.main == null)
-                {
-                    Debug.LogError("场景中缺少照射的主摄像机，将照射相机Tag设置为MainCamera或给该类_camera属性赋值照射摄像机");
-                    return false;
-                }
-                ray = new Ray(Camera.main.transform.position,position- Camera.main.transform.position);
-            }
-            else
-            {
-          
-                ray = new Ray(camera.transform.position,position- camera.transform.position);
-            }
-            Debug.DrawLine(ray.origin, ray.direction * 10f, Color.red);
-            RaycastHit hit;
-            if (string.IsNullOrEmpty(layer))
-            {
-                if (Physics.Raycast(ray, out hit, 100f))
-                {
-                    return hit.collider.gameObject == obj;
-                }
-            }
-            else
-            {
-                if (Physics.Raycast(ray, out hit, 1000f,LayerMask.GetMask(layer)))
-                {
-                  
-                    return hit.collider.gameObject == obj;
-                }
-            }
-            return false;
-        }
-        /// <summary>
-        /// 检测点是否在区域内
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="layerMask">指定检测层范围</param>
-        /// <param name="n">区域名</param>
-        /// <param name="camera"></param>
-        /// <returns></returns>
-        private static bool IsPositionInArea(this Vector3 p, string layerMask, string n, Camera camera = null)
+        public static bool IsRayHit3D(this GameObject obj, Vector3 position, Camera camera = null, int layerIndex = 0)
         {
             Ray ray;
             if (camera == null)
@@ -154,16 +109,25 @@ namespace WZK
                     Debug.LogError("场景中缺少照射的主摄像机，将照射相机Tag设置为MainCamera或给该类_camera属性赋值照射摄像机");
                     return false;
                 }
-                ray = new Ray(Camera.main.transform.position, p - Camera.main.transform.position);
+                ray = new Ray(Camera.main.transform.position, position - Camera.main.transform.position);
             }
             else
             {
-                ray = new Ray(camera.transform.position, p - camera.transform.position);
+                ray = new Ray(camera.transform.position, position - camera.transform.position);
             }
+            Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 100f, LayerMask.GetMask(layerMask)))
+            if (Physics.Raycast(ray, out hit, 1000f, layerIndex))
             {
-                if (hit.collider.name == n) return true;
+                if (hit.collider.gameObject == obj)
+                {
+                    return true;
+                }
+                else
+                {
+                    Debug.Log(hit.collider);
+                }
+                return hit.collider.gameObject == obj;
             }
             return false;
         }

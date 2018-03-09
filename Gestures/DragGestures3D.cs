@@ -9,36 +9,35 @@ namespace WZK
     /// 使用说明-直接以组件形式添加到物体上设置_camera来指定照射相机，场景需添加EventSystem事件系统，照射相机需添加物理射线，3D物体需有Collider相关组件
     /// </summary>
     [AddComponentMenu("Common/Gestures/DragGestures3D")]
-    public class DragGestures3D : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class DragGestures3D : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
     {
-        [HideInInspector]
-        public Camera _camera;//照射相机
-        private Camera _currentCamera;//当前相机
-        [HideInInspector]
-        public PointerEventData _pointerEventData;//事件数据
-        [HideInInspector]
-        public Vector3 _offset;//偏移点
-        [HideInInspector]
-        public Transform _moveOutJudgePoint;//移动出判断点
-        [HideInInspector]
-        public Rect _rectEdge = new Rect(0, 0, 0, 0);//边缘
-        public Action<GameObject, DragGestures3D> _onDownBefore;//按下前委托动作
+        public Action<GameObject, DragGestures3D> _onDownBefore;//按下前委托动作(用来先设置偏移量)
         public Action<GameObject, DragGestures3D> _onDown;//按下委托动作
         public Action<GameObject, DragGestures3D> _onBeginDrag;//开始拖拽委托动作
         public Action<GameObject, DragGestures3D> _onDrag;//拖拽中委托动作
         public Action<GameObject, DragGestures3D> _onEndDrag;//结束拖拽委托动作
+        [HideInInspector]
+        public PointerEventData _pointerEventData;//事件数据
+        [HideInInspector]
+        public Camera _camera;//照射相机
+        [HideInInspector]
+        public Rect _rectEdge = new Rect(0, 0, 0, 0);//边缘
+        private Camera _currentCamera;//当前相机
+        private Vector3 _offset;//偏移点
         private Vector3 _lastPosition;//上一个位置
         private Vector3 _screenSpace;//屏幕坐标
-        private bool _isDraging = false;//是否拖拽中
         private bool _isDown = false;//是否按下
+        private Transform _moveOutJudgePoint;//移动出判断点
+        private  int _defaultId = 100;
+        private  int _currentPointerId = 100;//当前手指ID
         private void Awake()
         {
             _moveOutJudgePoint = transform.FindChild("移出判断点");
         }
         /// <summary>
-        /// 对焦到鼠标点
+        /// 设置偏移
         /// </summary>
-        public void ResetToMouse(Vector3 offset = default(Vector3))
+        public void SetOffset(Vector3 offset = default(Vector3))
         {
             _offset = offset;
             _screenSpace = GetCamera().WorldToScreenPoint(transform.position);
@@ -46,49 +45,35 @@ namespace WZK
         }
         public void OnPointerDown(PointerEventData evenData)
         {
-            if (IsOther(evenData)) return;
+            if (_currentPointerId==_defaultId) _currentPointerId = evenData.pointerId;
+            if (_currentPointerId != evenData.pointerId) return;
             _isDown = true;
             _pointerEventData = evenData;
             if (_onDownBefore != null) _onDownBefore(gameObject,this);
-            UpdateOffset(evenData);
-            if (_onDown != null) _onDown(gameObject,this);
-        }
-        public void UpdateOffset(PointerEventData evenData)
-        {
             _screenSpace = GetCamera().WorldToScreenPoint(transform.position);
             _offset = transform.position - GetCamera().ScreenToWorldPoint(new Vector3(evenData.position.x, evenData.position.y, _screenSpace.z));
+            if (_onDown != null) _onDown(gameObject,this);
         }
         public void OnBeginDrag(PointerEventData evenData)
         {
-            if (IsOther(evenData)) return;
-            _isDraging = true;
+            if (_currentPointerId != evenData.pointerId) return;
             UpdatePosition(evenData);
             if (_onBeginDrag != null) _onBeginDrag(gameObject,this);
         }
         public void OnDrag(PointerEventData evenData)
         {
-            if (IsOther(evenData)) return;
+            if (_currentPointerId != evenData.pointerId) return;
             UpdatePosition(evenData);
             if (_onDrag != null) _onDrag(gameObject,this);
         }
-        public void OnEndDrag(PointerEventData evenData)
-        {
-            if (IsOther(evenData)) return;
-            _isDraging = false;
-            _pointerEventData = evenData;
-            if (_onEndDrag != null) _onEndDrag(gameObject,this);
-        }
         public void OnPointerUp(PointerEventData evenData)
         {
-            if (IsOther(evenData)) return;
+            if (_currentPointerId != evenData.pointerId) return;
+            _currentPointerId = _defaultId;
             _isDown = false;
-            _pointerEventData = evenData;
-            if (_isDraging == false)
-            {
-                if (_onEndDrag != null) _onEndDrag(gameObject,this);
-            }
+            if (_onEndDrag != null) _onEndDrag(gameObject, this);
         }
-        public void UpdatePosition(PointerEventData evenData)
+        private void UpdatePosition(PointerEventData evenData)
         {
             _pointerEventData = evenData;
             _lastPosition = this.transform.position;
@@ -106,24 +91,10 @@ namespace WZK
             }
         }
         /// <summary>
-        /// 是否别的手指
-        /// </summary>
-        /// <param name="evenData"></param>
-        /// <returns></returns>
-        public bool IsOther(PointerEventData evenData)
-        {
-#if UNITY_EDITOR
-            if (evenData.pointerId != -1) return true;
-#else
-            if (evenData.pointerId != 0) return true;
-#endif
-            return false;
-        }
-        /// <summary>
         /// 获取相机
         /// </summary>
         /// <returns></returns>
-        public Camera GetCamera()
+        private Camera GetCamera()
         {
             if (_currentCamera != null) return _currentCamera;
             if (_camera == null)
@@ -152,7 +123,7 @@ namespace WZK
                 //游戏开始-回到游戏的时候触发
                 if (_onEndDrag != null && _isDown)
                 {
-                    _isDraging = false;
+                    _currentPointerId = _defaultId;
                     _isDown = false;
                     _onEndDrag(gameObject, this);
                 }
