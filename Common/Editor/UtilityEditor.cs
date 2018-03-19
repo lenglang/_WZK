@@ -63,7 +63,7 @@ namespace WZK
                 if (textureImporter == null)
                     continue;
 
-                if (textureImporter.textureType == TextureImporterType.Advanced)
+                if (textureImporter.textureType == TextureImporterType.Default)
                 {
                     Debug.Log(assetPath);
                 }

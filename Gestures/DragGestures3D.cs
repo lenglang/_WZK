@@ -32,7 +32,7 @@ namespace WZK
         private  int _currentPointerId = 100;//当前手指ID
         private void Awake()
         {
-            _moveOutJudgePoint = transform.FindChild("移出判断点");
+            _moveOutJudgePoint = transform.Find("移出判断点");
         }
         /// <summary>
         /// 设置偏移

@@ -22,8 +22,8 @@ namespace WZK
                 f_LastInterval = Time.realtimeSinceStartup;
             }
             string sUserMemory = "";
-            sUserMemory += "AllMemory:" + Profiler.GetTotalAllocatedMemory() / 1000000 + "M" + "\n";
-            sUserMemory += "MonoUsed:" + Profiler.GetMonoUsedSize() / 1000000 + "M" + "\n";
+            sUserMemory += "AllMemory:" + UnityEngine.Profiling.Profiler.GetTotalAllocatedMemory() / 1000000 + "M" + "\n";
+            sUserMemory += "MonoUsed:" + UnityEngine.Profiling.Profiler.GetMonoUsedSize() / 1000000 + "M" + "\n";
             sUserMemory += "FPS:" + f_Fps.ToString("f2");
             GUILayout.Box(sUserMemory);
         }

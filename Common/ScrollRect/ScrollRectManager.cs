@@ -48,7 +48,7 @@ namespace WZK
             NotificationManager<ScrollRectItemEvent, GameObject>.Instance.AddEventListener(ScrollRectItemEvent.UP, ItemUp);
         }
 
-        private void ItemUp(GameObject arg0)
+        private void ItemUp(ScrollRectItemEvent srit,GameObject arg0)
         {
             Debug.Log("aaaaa");
         }
@@ -57,7 +57,7 @@ namespace WZK
         /// 按下Item
         /// </summary>
         /// <param name="arg0"></param>
-        private void DownItem(GameObject arg0)
+        private void DownItem(ScrollRectItemEvent srit, GameObject arg0)
         {
             Debug.Log("按下Item");
         }
@@ -65,7 +65,7 @@ namespace WZK
         /// 离开Item栏
         /// </summary>
         /// <param name="arg0"></param>
-        private void ExitBox(GameObject arg0)
+        private void ExitBox(ScrollRectBoxEvent srit, GameObject arg0)
         {
             _scrollRect.enabled = false;
         }

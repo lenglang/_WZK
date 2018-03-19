@@ -21,11 +21,11 @@ namespace WZK
             nc._name = "宝宝";
             NotificationManager<EventType, NotificationContent>.Instance.DispatchEvent(EventType.分数, nc);
         }
-        private void OnComplete1()
+        private void OnComplete1(EventType et)
         {
             Debug.Log("分数更新");
         }
-        private void OnComplete2(NotificationContent data)
+        private void OnComplete2(EventType et,NotificationContent data)
         {
             Debug.Log("获取数据:" + data.ToString());
         }

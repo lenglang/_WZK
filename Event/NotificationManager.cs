@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace WZK
 {
     /// <summary>
-    /// 不带参数通知控制
+    /// 通知控制
     /// </summary>
     /// <typeparam name="T1">枚举类型</typeparam>
     public class NotificationManager<T1>
@@ -20,34 +20,29 @@ namespace WZK
                 if (_instance == null)
                 {
                     _instance = new NotificationManager<T1>();
-                    if (!typeof(T1).IsEnum)
-                    {
-                        throw new ArgumentException("传递的类型请使用枚举");
-                    }
+                    //if (!typeof(T1).IsEnum)
+                    //{
+                    //    throw new ArgumentException("传递的类型请使用枚举");
+                    //}
                 }
                 return _instance;
             }
         }
-
-        internal void AddEventListener(object updateLoveHeart)
-        {
-            throw new NotImplementedException();
-        }
-
+        public class MyEvent : UnityEvent<T1> { }
         /// <summary>
         /// 存储事件的字典
         /// </summary>
-        private Dictionary<T1, UnityEvent> _eventDictionary = new Dictionary<T1, UnityEvent>();
+        private Dictionary<T1, UnityEvent<T1>> _eventDictionary = new Dictionary<T1, UnityEvent<T1>>();
         /// <summary>
         /// 添加监听事件委托
         /// </summary>
         /// <param name="eventKey">事件Key</param>
         /// <param name="eventListener">事件监听器</param>
-        public void AddEventListener(T1 eventKey, UnityAction action)
+        public void AddEventListener(T1 eventKey, UnityAction<T1> action)
         {
             if (!_eventDictionary.ContainsKey(eventKey))
             {
-                UnityEvent myEvent = new UnityEvent();
+                MyEvent myEvent = new MyEvent();
                 myEvent.AddListener(action);
                 _eventDictionary.Add(eventKey, myEvent);
             }
@@ -67,12 +62,6 @@ namespace WZK
             _eventDictionary[eventKey] = null;
             _eventDictionary.Remove(eventKey);
         }
-        public void RemoveListener(T1 eventKey,UnityAction action)
-        {
-            if (!_eventDictionary.ContainsKey(eventKey))
-                return;
-            _eventDictionary[eventKey].RemoveListener(action);
-        }
         /// <summary>
         /// 移除所有事件
         /// </summary>
@@ -86,7 +75,7 @@ namespace WZK
         /// </summary>
         /// <param name="eventKey"></param>
         /// <param name="action"></param>
-        public void RemoveEventListener(T1 eventKey, UnityAction action)
+        public void RemoveEventListener(T1 eventKey, UnityAction<T1> action)
         {
             if (!_eventDictionary.ContainsKey(eventKey))
                 return;
@@ -100,7 +89,7 @@ namespace WZK
         {
             if (!_eventDictionary.ContainsKey(eventKey))
                 return;
-            _eventDictionary[eventKey].Invoke();
+            _eventDictionary[eventKey].Invoke(eventKey);
         }
         /// <summary>
         /// 是否存在指定事件
@@ -111,7 +100,7 @@ namespace WZK
         }
     }
     /// <summary>
-    /// 带参数通知控制
+    /// 通知控制
     /// </summary>
     /// <typeparam name="T1">枚举类型</typeparam>
     /// <typeparam name="T2">传递参数</typeparam>
@@ -128,20 +117,16 @@ namespace WZK
                 if (_instance == null)
                 {
                     _instance = new NotificationManager<T1, T2>();
-                    if (!typeof(T1).IsEnum)
-                    {
-                        throw new ArgumentException("传递的类型请使用枚举");
-                    }
                 }
                 return _instance;
             }
         }
-        public class MyEvent : UnityEvent<T2> { }
+        public class MyEvent : UnityEvent<T1,T2> { }
         /// <summary>
         /// 存储事件的字典
         /// </summary>
         private Dictionary<T1, MyEvent> _eventDictionary = new Dictionary<T1, MyEvent>();
-        public void AddEventListener(T1 eventKey, UnityAction<T2> action)
+        public void AddEventListener(T1 eventKey, UnityAction<T1,T2> action)
         {
             if (!_eventDictionary.ContainsKey(eventKey))
             {
@@ -178,7 +163,7 @@ namespace WZK
         /// </summary>
         /// <param name="eventKey"></param>
         /// <param name="sendData"></param>
-        public void RemoveEventListener(T1 eventKey, UnityAction<T2> action)
+        public void RemoveEventListener(T1 eventKey, UnityAction<T1,T2> action)
         {
             if (!_eventDictionary.ContainsKey(eventKey))
                 return;
@@ -193,7 +178,7 @@ namespace WZK
         {
             if (!_eventDictionary.ContainsKey(eventKey))
                 return;
-            _eventDictionary[eventKey].Invoke(data);
+            _eventDictionary[eventKey].Invoke(eventKey,data);
         }
         /// <summary>
         /// 是否存在指定事件
