@@ -37,10 +37,10 @@ namespace WZK
             return list.Skip(startIndex).Take(length).ToList();
         }
         /// <summary>
-        /// 开启3D拖拽
+        /// 开启事件
         /// </summary>
         /// <param name="list"></param>
-        public static void OpenDragEvent(this List<DragGestures3D> list)
+        public static void OpenEvent<T>(this List<T> list) where T : MonoBehaviour
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -48,41 +48,29 @@ namespace WZK
             }
         }
         /// <summary>
-        /// 关闭其他3D拖拽
+        /// 关闭其他事件
         /// </summary>
         /// <param name="list"></param>
         /// <param name="dg3D"></param>
-        public static void CloseOtherDragEvent(this List<DragGestures3D> list,DragGestures3D dg3D)
+        public static void CloseEvent<T>(this List<T> list) where T : MonoBehaviour
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i].enabled = false;
+            }
+        }
+        /// <summary>
+        /// 关闭其他事件
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="dg3D"></param>
+        public static void CloseOtherEvent<T>(this List<T> list,T dg3D) where T : MonoBehaviour
         {
             for (int i = 0; i < list.Count; i++)
             {
                 list[i].enabled = false;
             }
             dg3D.enabled = true;
-        }
-        /// <summary>
-        /// 开启2D拖拽
-        /// </summary>
-        /// <param name="list"></param>
-        public static void OpenDragEvent(this List<DragGestures2D> list)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                list[i].enabled = true;
-            }
-        }
-        /// <summary>
-        /// 关闭其他2D拖拽
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="dg2D"></param>
-        public static void CloseOtherDragEvent(this List<DragGestures2D> list, DragGestures2D dg2D)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                list[i].enabled = false;
-            }
-            dg2D.enabled = true;
         }
     }
 }
