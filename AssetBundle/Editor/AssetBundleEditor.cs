@@ -43,7 +43,7 @@ namespace WZK
             directoryName += "/Android";
 #endif
 #if UNITY_IOS
-        directoryName += "/iOS";
+        directoryName += "/IOS";
 #endif
             if (!Directory.Exists(directoryName))
                 Directory.CreateDirectory(directoryName);
@@ -86,7 +86,7 @@ namespace WZK
             directoryName += "/Android";
 #endif
 #if UNITY_IOS
-            directoryName += "/iOS";
+            directoryName += "/IOS";
 #endif
             if (!Directory.Exists(directoryName))
                 Directory.CreateDirectory(directoryName);
