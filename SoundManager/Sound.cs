@@ -1,64 +1,30 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 namespace WZK
 {
     public class Sound
     {
         public string _name;
-        public AudioClip _clip;
-        public bool _loop;
-        public Action _competeAction;
-        public SoundManager _soundControl;
-        public AudioSource _audioSource;
-        public float _playTime;
         public string _id;
+        public AudioClip _clip;
+        public bool _loop = false;
+        public AudioSource _audioSource;
+        public Action _competeAction;
+        public float _playTime = 0;
         public bool _isScaleTime = false;
-        public bool isFinish
+        public bool IsFinish
         {
-            get
-            {
-                return _playTime >= _clip.length;
-            }
+            get { return _playTime >= _clip.length; }
         }
-        public Sound(SoundManager soundControl)
+        public float Process
         {
-            _loop = false;
-            _competeAction = null;
-            _soundControl = soundControl;
-            _playTime = 0;
-            _id = string.Empty;
-        }
-        public float process
-        {
-            get
-            {
-                return ((float)_audioSource.timeSamples) / ((float)_clip.samples);
-            }
-        }
-        public void Finish()
-        {
-            if (_competeAction != null)
-                _competeAction();
-            _soundControl.RemoveSound(this);
-        }
-        public void FinishNoComplete()
-        {
-            _soundControl.RemoveSound(this);
-        }
-        public Sound OnComplete(Action complete)
-        {
-            this._competeAction = complete;
-            return this;
+            get { return ((float)_audioSource.timeSamples) / ((float)_clip.samples); }
         }
         public Sound SetLoop(bool loop = true)
         {
             _loop = loop;
             _audioSource.loop = loop;
             return this;
-        }
-        public AudioClip GetClip()
-        {
-            return this._clip;
         }
         public Sound SetVolume(float value = 1.0f)
         {
@@ -69,6 +35,16 @@ namespace WZK
         {
             _id = id;
             return this;
+        }
+        public Sound OnComplete(Action complete)
+        {
+            _competeAction = complete;
+            return this;
+        }
+        public void Finish(bool b = true)
+        {
+            if (b && _competeAction != null) _competeAction();
+            SoundManager.Instance.RemoveSound(this);
         }
     }
 }
