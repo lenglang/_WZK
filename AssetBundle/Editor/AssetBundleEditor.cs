@@ -36,7 +36,7 @@ namespace WZK
             assetBundleBuild.assetNames = new string[1];
             assetBundleBuild.assetNames[0] = AssetDatabase.GetAssetPath(obj);
             directoryName = Path.GetDirectoryName(assetBundleBuild.assetNames[0]);
-            if (string.IsNullOrEmpty(directoryName) == false) directoryName = d;
+            if (string.IsNullOrEmpty(directoryName)) directoryName = d;
             assetBundleBuild.assetBundleName = Path.GetFileNameWithoutExtension(assetBundleBuild.assetNames[0]) + ".unity3d";
             if (string.IsNullOrEmpty(fileName) == false) assetBundleBuild.assetBundleName = fileName + ".unity3d";
 #if UNITY_ANDROID

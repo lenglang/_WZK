@@ -7,6 +7,7 @@ namespace WZK
     /// 作者-wzk
     /// 功能-3D物体拖拽
     /// 使用说明-直接以组件形式添加到物体上设置_camera来指定照射相机，场景需添加EventSystem事件系统，照射相机需添加物理射线，3D物体需有Collider相关组件
+    /// 拖拽的时候镜头移动，防止拖拽的东西不见，可以将拖拽物放到相机层级下
     /// </summary>
     [AddComponentMenu("Common/Gestures/DragGestures3D")]
     public class DragGestures3D : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
