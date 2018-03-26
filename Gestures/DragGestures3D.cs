@@ -21,8 +21,8 @@ namespace WZK
         public PointerEventData _pointerEventData;//事件数据
         [HideInInspector]
         public Camera _camera;//照射相机
-        [HideInInspector]
-        public Rect _rectEdge = new Rect(0, 0, 0, 0);//边缘
+        private Rect _rectEdge = new Rect(0, 0, 0, 0);//边缘
+        private string _limit = "";//限制轴
         private Camera _currentCamera;//当前相机
         private Vector3 _offset;//偏移点
         private Vector3 _lastPosition;//上一个位置
@@ -31,9 +31,26 @@ namespace WZK
         private Transform _moveOutJudgePoint;//移动出判断点
         private  int _defaultId = 100;
         private  int _currentPointerId = 100;//当前手指ID
-        private void Awake()
+        /// <summary>
+        /// 设定限制轴
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public DragGestures3D SetLimitAxis(string limit)
         {
+            _limit = limit;
+            return this;
+        }
+        /// <summary>
+        /// 设置限定位置
+        /// </summary>
+        /// <returns></returns>
+        public DragGestures3D SetLimitPosition(Rect rectEdge=default(Rect))
+        {
+            _rectEdge = rectEdge;
             _moveOutJudgePoint = transform.Find("移出判断点");
+            if (_moveOutJudgePoint == null) _moveOutJudgePoint = transform;
+            return this;
         }
         /// <summary>
         /// 设置偏移
@@ -81,7 +98,13 @@ namespace WZK
             Vector3 curScreenSpace = new Vector3(evenData.position.x, evenData.position.y, _screenSpace.z);
             Vector3 v3;
             Vector3 CurPosition = GetCamera().ScreenToWorldPoint(curScreenSpace) + _offset;
-            transform.position = CurPosition;
+            Vector3 target;
+            target = transform.position;
+            _limit = _limit.ToLower();
+            if (!_limit.Contains("x")) target.x = CurPosition.x;
+            if (!_limit.Contains("y")) target.y = CurPosition.y;
+            if (!_limit.Contains("z")) target.z = CurPosition.z;
+            transform.position = target;
             if (_moveOutJudgePoint != null)
             {
                 v3 = Camera.main.WorldToScreenPoint(_moveOutJudgePoint.position);
