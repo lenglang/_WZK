@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-namespace WZK { 
+namespace WZK
+{ 
     /// <summary>
     /// 打包编辑器
     /// </summary>
@@ -30,10 +31,16 @@ namespace WZK {
                 config._savePath = EditorGUILayout.TextField("保存路径", config._savePath);
                 config._saveName = EditorGUILayout.TextField("保存名字", config._saveName);
                 config._object = EditorGUILayout.ObjectField("打包对象",config._object, typeof(Object), false);
+                EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("删除") && EditorUtility.DisplayDialog("警告", "确定要删除该数据吗", "确定", "取消"))
                 {
                     delteIndex = i;
                 }
+                if (GUILayout.Button("打包"))
+                {
+                    AssetBundleEditor.BuildOne(config._object, true, config._savePath, config._saveName);
+                }
+                EditorGUILayout.EndHorizontal();
                 GUILayout.Space(50);
             }
             if (delteIndex != -1) abc._SelectionObjects.RemoveAt(delteIndex);
@@ -42,7 +49,7 @@ namespace WZK {
             {
                 abc.CreateObject(abc._savePath);
             }
-            if (GUILayout.Button("一键打包")&&abc._SelectionObjects.Count>0)
+            if (GUILayout.Button("一键打包所有")&&abc._SelectionObjects.Count>0)
             {
                 EditorApplication.delayCall += CreateNewScene;//延迟调用，防报错
             }
@@ -56,11 +63,11 @@ namespace WZK {
         }
         private void CreateNewScene()
         {
-            AssetBundleConfig.Config cg;
+            AssetBundleConfig.Config config;
             for (int i = 0; i < abc._SelectionObjects.Count; i++)
             {
-                cg = abc._SelectionObjects[i];
-                if (cg._bool) AssetBundleEditor.BuildOne(cg._object, true, cg._savePath, cg._saveName);
+                config = abc._SelectionObjects[i];
+                if (config._bool) AssetBundleEditor.BuildOne(config._object, true, config._savePath, config._saveName);
             }
         }
     }
