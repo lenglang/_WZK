@@ -132,5 +132,15 @@ namespace WZK
 
             return (int)length;
         }
+        /// <summary>
+        /// 获取文件夹下所有文件路径
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="extension">"*.mp3"</param>
+        /// <returns></returns>
+        public static string[]GetFiles(string path,string extension="*")
+        {
+            return Directory.GetFiles(path,extension, SearchOption.AllDirectories);
+        }
     }
 }

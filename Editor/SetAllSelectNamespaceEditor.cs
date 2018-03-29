@@ -1,22 +1,37 @@
-﻿using System;
-using System.Collections;
+﻿using UnityEditor;
+using UnityEngine;
 using System.IO;
 using System.Text;
-using UnityEditor;
-using Object = UnityEngine.Object;
-
-namespace Babybus.Repairshop
+using System;
+namespace WZK
 {
-    public class SetAllSelectNamespaceEditor : Editor
+    public class SetAllSelectNamespaceEditor : EditorWindow
     {
-        [MenuItem("批量修改名空间/修改")]
+        private static string _name;
+        [MenuItem("Assets/WZK/批量修改名空间")]
+        static void Rename()
+        {
+            SetAllSelectNamespaceEditor window = GetWindow<SetAllSelectNamespaceEditor>();
+            
+            window.titleContent.text = "批量修改名空间"; 
+            window.Show();
+        }
+        private void OnGUI()
+        {
+            GUILayout.Space(50);
+            _name = EditorGUILayout.TextField("命名空间名", _name);
+            GUILayout.Space(50);
+            if (GUILayout.Button("替换") && string.IsNullOrEmpty(_name) == false)
+            {
+                SetAllSelectNamespace();
+            }
+        }
         static void SetAllSelectNamespace()
         {
-            string setedNamespace = "WZK";
             StringBuilder stringBuilder;
             if (Selection.objects.Length == 0)
                 return;
-            Object[] SelectedAsset = Selection.GetFiltered(typeof(object), SelectionMode.DeepAssets);
+            UnityEngine.Object[] SelectedAsset = Selection.GetFiltered(typeof(object), SelectionMode.DeepAssets);
             for (int i = 0; i < SelectedAsset.Length; i++)
             {
                 var path = AssetDatabase.GetAssetPath(SelectedAsset[i]);
@@ -37,7 +52,7 @@ namespace Babybus.Repairshop
                         {
                             stringBuilder = new StringBuilder();
                             stringBuilder.Append("namespace ");
-                            stringBuilder.Append(setedNamespace);
+                            stringBuilder.Append(_name);
                             stringBuilder.Append("{");
 
                             string tempstring = scriptAllLines[j];
@@ -55,7 +70,7 @@ namespace Babybus.Repairshop
                         }
                         else
                         {
-                            scriptAllLines[j] = "namespace " + setedNamespace;
+                            scriptAllLines[j] = "namespace " + _name;
                             File.WriteAllLines(path, scriptAllLines);
                         }
                         break;
@@ -64,7 +79,7 @@ namespace Babybus.Repairshop
                     {
                         stringBuilder = new StringBuilder();
                         stringBuilder.Append("namespace ");
-                        stringBuilder.Append(setedNamespace);
+                        stringBuilder.Append(_name);
                         stringBuilder.Append("{");
                         stringBuilder.Append(scriptAllLines[j]);
                         scriptAllLines[j] = stringBuilder.ToString();
@@ -74,6 +89,7 @@ namespace Babybus.Repairshop
                     }
                 }
             }
+            AssetDatabase.Refresh();
         }
     }
 }
