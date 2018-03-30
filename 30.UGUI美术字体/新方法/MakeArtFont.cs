@@ -7,7 +7,7 @@ using System;
 public class MakeArtFont
 {
 
-    [MenuItem("Assets/WZK/LoadFont（选中目标文件夹）")]
+    [MenuItem("Assets/WZK/创建美术字体")]
     static void CarteNewFont()
     {
         UnityEngine.Object obj = Selection.activeObject;
@@ -98,7 +98,6 @@ public class MakeArtFont
     /// <param name="lineNum"></param>  
     public static void CreateBitmapFont(string fileName, Texture texture, List<BmInfo> bmInfoList, int maxWidth, int maxHeight)
     {
-
         string assetPath = GetAssetPath(AssetDatabase.GetAssetPath(texture));
         string fontPath = assetPath + "/" + fileName + "_1.fontsettings";
         string materialPath = assetPath + "/" + fileName + "_2.mat";
@@ -113,13 +112,11 @@ public class MakeArtFont
         {
             fontMaterial.mainTexture = texture;
         }
-        Font assetFont = AssetDatabase.LoadAssetAtPath(fontPath, typeof(Font)) as Font;
+        //字体如果是新创建的，先执行AssetDatabase.CreateAsset(assetFont, fontPath);
+        //再赋值会有问题（重开unity后字体信息丢失），所以，一律采用删除旧的，创建新的，赋值，创建到本地
+        AssetDatabase.DeleteAsset(fontPath);
         string ApplicationDataPath = Application.dataPath.Replace("Assets", "") + fontPath;
-        if (assetFont == null)
-        {
-            assetFont = new Font();
-            AssetDatabase.CreateAsset(assetFont, fontPath);
-        }
+        Font assetFont = new Font();
         assetFont.material = fontMaterial;
         CharacterInfo[] characters = new CharacterInfo[bmInfoList.Count];
         for (int i = 0; i < bmInfoList.Count; i++)
@@ -139,6 +136,7 @@ public class MakeArtFont
             characters[i] = info;
         }
         assetFont.characterInfo = characters;
+        AssetDatabase.CreateAsset(assetFont, fontPath);
     }
     private static string GetAssetPath(string path)
     {
