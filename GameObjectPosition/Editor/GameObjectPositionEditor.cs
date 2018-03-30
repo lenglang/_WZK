@@ -63,7 +63,7 @@ namespace WZK
             GUILayout.Space(1000);
             serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(_gameObjectPosition);
-            if (GUI.changed) EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            if (GUI.changed&& EditorApplication.isPlaying==false) EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
         /// <summary>
         /// 保存位置
