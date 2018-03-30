@@ -215,5 +215,6 @@ namespace WZK
         public Vector3 _localScale;
         public Vector3 _scale;
         public Vector3 _angle;
+        public GameObject _gameObject;
     }
 }

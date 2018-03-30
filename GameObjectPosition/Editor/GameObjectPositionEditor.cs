@@ -11,8 +11,12 @@ namespace WZK
     {
         private GameObjectPosition _gameObjectPosition;
         private TransformInformation _information;
+        private TransformInformation _currentInformation;
         private string _flodOutName;
         private int _deletePositionIndex = -1;
+        private bool _creating = false;
+        public static PositionScriptableObject PSO;
+        private string _psoPath = "Assets/动态保存位置.asset";
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -31,23 +35,42 @@ namespace WZK
                 _information = _gameObjectPosition._list[j];
                 EditorGUILayout.BeginHorizontal();
                 _information._desc = EditorGUILayout.TextField(_information._desc);
-                if (GUILayout.Button("切换到该位置(本地)"))
+                if (GUILayout.Button("切到本地坐标"))
                 {
-                    Transform transform = _gameObjectPosition.gameObject.GetComponent<Transform>();
+                    Transform transform = _gameObjectPosition.transform;
                     transform.localPosition = _information._localPosition;
                     transform.rotation = _information._rotation;
                     transform.localScale = _information._localScale;
                 }
-                if (GUILayout.Button("切换到该位置(世界)"))
+                if (GUILayout.Button("切到世界坐标"))
                 {
-                    Transform transform = _gameObjectPosition.gameObject.GetComponent<Transform>();
+                    Transform transform = _gameObjectPosition.transform;
                     transform.position = _information._position;
                     transform.rotation = _information._rotation;
                     transform.localScale = _information._localScale;
                 }
-                if (GUILayout.Button("保存当前位置"))
+                if (GUILayout.Button("保存位置"))
                 {
-                    SavePosition(_information, _gameObjectPosition.gameObject.GetComponent<Transform>());
+                    SavePosition(_information, _gameObjectPosition.transform);
+                    if (EditorApplication.isPlaying)
+                    {
+                        _currentInformation = _information;
+                        EditorApplication.delayCall += CreateScriptableObject;
+                    }
+                    Debug.Log("保存成功");
+                }
+                if (GUILayout.Button("更新运行状态保存的位置")&& EditorApplication.isPlaying==false)
+                {
+                    PSO = AssetDatabase.LoadAssetAtPath<PositionScriptableObject>(_psoPath);
+                    if (PSO != null)
+                    {
+                        TransformInformation t = PSO._positionList.Find(n => n._gameObject == _gameObjectPosition.gameObject && n._desc == _information._desc);
+                        if (t != null)
+                        {
+                            _gameObjectPosition._list[j] = t;
+                            Debug.Log("更新成功");
+                        }
+                    }
                 }
                 if (GUILayout.Button("删除"))
                 {
@@ -77,6 +100,28 @@ namespace WZK
             information._rotation = transform.rotation;
             information._localScale = transform.localScale;
             information._angle = transform.localEulerAngles;
+            if (EditorApplication.isPlaying) information._gameObject = transform.gameObject;
+        }
+        /// <summary>
+        /// 创建序列化脚本对象
+        /// </summary>
+        private void CreateScriptableObject()
+        {
+            if (PSO == null)
+            {
+                PSO = AssetDatabase.LoadAssetAtPath<PositionScriptableObject>(_psoPath);
+                if (PSO==null)
+                {
+                    PSO = ScriptableObject.CreateInstance<PositionScriptableObject>();
+                    AssetDatabase.CreateAsset(PSO, _psoPath);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+                PSO._positionList.Clear();
+            }
+            TransformInformation t = PSO._positionList.Find(n => n._gameObject == _currentInformation._gameObject && n._desc == _currentInformation._desc);
+            if (t != null) PSO._positionList.Remove(t);
+            PSO._positionList.Add(_currentInformation);
         }
     }
 }
