@@ -13,7 +13,7 @@ namespace WZK
         private float _xRadian = 0;//弧度增量
         [Header("y轴移动距离")]
         public float _yMoveDis = 0;
-        [Header("x轴移动弧度")]
+        [Header("y轴移动弧度")]
         public float _yMoveRadian = 0f;
         private float _yRadian = 0;//弧度增量
         [Header("z轴移动距离")]
