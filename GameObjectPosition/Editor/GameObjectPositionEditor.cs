@@ -83,7 +83,7 @@ namespace WZK
                 GUILayout.Space(20);
             }
             if (_deletePositionIndex != -1) _gameObjectPosition._list.RemoveAt(_deletePositionIndex);
-            GUILayout.Space(1000);
+            GUILayout.Space(50);
             serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(_gameObjectPosition);
             if (GUI.changed&& EditorApplication.isPlaying==false) EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());

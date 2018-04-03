@@ -6,7 +6,7 @@ using System;
 namespace WZK
 {
     [CustomEditor(typeof(Transform))]
-    public class TransformEditor : Editor
+    public class TransformEditorExtension : Editor
     {
         private Transform _transform;
         private Assembly _assembly;
@@ -16,6 +16,7 @@ namespace WZK
 
         private void OnEnable()
         {
+            if (_assembly != null) return;
             _transform = target as Transform;
             //载入程序集
             _assembly = Assembly.GetAssembly(typeof(Editor));
@@ -30,10 +31,7 @@ namespace WZK
         public override void OnInspectorGUI()
         {
             _onInspectorGUI.Invoke(_transformEditor, null);
-            if (GUILayout.Button("添加位置管理"))
-            {
-                if (_transform.GetComponent<GameObjectPosition>() == null) _transform.gameObject.AddComponent<GameObjectPosition>();
-            }
+            TransformButtonEditor.ShowButton(_transform);
         }
     }
 }
