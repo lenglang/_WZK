@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 namespace WZK
 {
@@ -11,7 +8,7 @@ namespace WZK
     public class DownEvent : MonoBehaviour,IPointerDownHandler
     {
         public delegate void VoidDelegate(PointerEventData evenData, GameObject obj, DownEvent etl);
-        public VoidDelegate _onDown;
+        public VoidDelegate _action;
         public static DownEvent Get(GameObject go)
         {
             DownEvent listener = go.GetComponent<DownEvent>();
@@ -20,7 +17,7 @@ namespace WZK
         }
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (_onDown != null) _onDown(eventData, gameObject, this);
+            if (_action != null) _action(eventData, gameObject, this);
         }
     }
 }
