@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 namespace WZK
 {
     public class Page : MonoBehaviour

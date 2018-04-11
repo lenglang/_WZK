@@ -10,64 +10,90 @@ namespace WZK
     [AddComponentMenu("Common/Gestures/DragGestures2D")]
     public class DragGestures2D : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
     {
+        [Header("画布")]
+        public Canvas _canvas;
         public Action<GameObject, DragGestures2D> _onDownBefore;//按下前委托动作(用来先设置偏移量)
         public Action<GameObject, DragGestures2D> _onDown;//按下委托动作
         public Action<GameObject, DragGestures2D> _onBeginDrag;//开始拖拽委托动作
         public Action<GameObject, DragGestures2D> _onDrag;//拖拽中委托动作
         public Action<GameObject, DragGestures2D> _onEndDrag;//结束拖拽委托动作
-        private Vector3 _localPosition;//按下UI时UI的位置
         private bool _isDown = false;//是否按下
-        private Vector2 _startPosition;//鼠标（手指）按下点
-        private Vector2 _currentPosition;//鼠标（手指）当前点
         private int _defaultId = 100;
         private int _currentPointerId = 100;//当前手指ID
-        [HideInInspector]
-        public bool _isFocusClickPoint = true;//是否对焦到点击点
-        [HideInInspector]
-        public PointerEventData _pointerEventData;
-        public void OnPointerDown(PointerEventData evenData)
+        private PointerEventData _pointerEventData;
+        private Vector3 _offset=Vector3.zero;//偏移量
+        private bool _isOffset=true;//是否偏移，false即不偏移位置会对准到点击位置
+        public static DragGestures2D Get(GameObject go)
         {
-            if (_currentPointerId == _defaultId) _currentPointerId = evenData.pointerId;
-            if (_currentPointerId != evenData.pointerId) return;
-            _pointerEventData = evenData;
-            if (_isFocusClickPoint) transform.position = evenData.pressPosition;
-            _isDown = true;
-            _localPosition = this.transform.localPosition;
-            _startPosition = evenData.position;
-            if (_onDown != null) _onDown(gameObject,this);
+            DragGestures2D listener = go.GetComponent<DragGestures2D>();
+            if (listener == null) listener = go.AddComponent<DragGestures2D>();
+            return listener;
+        }
+        public DragGestures2D SetCanvas(Canvas canvas)
+        {
+            _canvas = canvas;
+            return this;
         }
         /// <summary>
-        /// 对焦点
+        /// 设置是否偏移
         /// </summary>
-        /// <param name="p"></param>
-        public void FocusPosition(Vector3 p)
+        /// <param name="isOffset"></param>
+        /// <returns></returns>
+        public DragGestures2D SetIsOffset(bool isOffset)
         {
-            transform.position = p;
+            _isOffset = isOffset;
+            return this;
         }
-        public void OnBeginDrag(PointerEventData evenData)
+        public PointerEventData GetPointerEventData()
         {
-            if (_currentPointerId != evenData.pointerId) return;
-            UpdatePosition(evenData);
+            return _pointerEventData;
+        }
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (_currentPointerId == _defaultId) _currentPointerId = eventData.pointerId;
+            if (_currentPointerId != eventData.pointerId) return;
+            if (_isOffset) { _offset = transform.position - GetPosition(eventData); }
+            else { UpdatePosition(eventData); }
+            _pointerEventData = eventData;
+            _isDown = true;
+            if (_onDown != null) _onDown(gameObject,this);
+        }
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (_currentPointerId != eventData.pointerId) return;
+            UpdatePosition(eventData);
             if (_onBeginDrag != null) _onBeginDrag(gameObject,this);
         }
-        public void OnDrag(PointerEventData evenData)
+        public void OnDrag(PointerEventData eventData)
         {
-            if (_currentPointerId != evenData.pointerId) return;
-            UpdatePosition(evenData);
+            if (_currentPointerId != eventData.pointerId) return;
+            UpdatePosition(eventData);
             if (_onDrag != null) _onDrag(gameObject,this);
         }
-        public void UpdatePosition(PointerEventData evenData)
+        public void UpdatePosition(PointerEventData eventData)
         {
-            _pointerEventData = evenData;
-            _currentPosition = evenData.position;
-            this.transform.localPosition = new Vector2(_localPosition.x + _currentPosition.x - _startPosition.x, _localPosition.y + _currentPosition.y - _startPosition.y);
+            transform.position = GetPosition(eventData);
+            if (_isOffset) transform.position += _offset;
         }
-        public void OnPointerUp(PointerEventData evenData)
+        public void OnPointerUp(PointerEventData eventData)
         {
-            if (_currentPointerId != evenData.pointerId) return;
+            if (_currentPointerId != eventData.pointerId) return;
             _isDown = false;
             _currentPointerId = _defaultId;
             if (_onEndDrag != null) _onEndDrag(gameObject,this);
+        }
+        public Vector3 GetPosition(PointerEventData eventData)
+        {
+            Vector2 pos;
+            pos = eventData.position;
+            if (_canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                return RectTransformUtility.PixelAdjustPoint(pos, transform, _canvas);
+            }
+            else
+            {
+                return _canvas.worldCamera.ScreenToWorldPoint(eventData.position);
+            }
         }
         void OnApplicationPause(bool isPause)
         {

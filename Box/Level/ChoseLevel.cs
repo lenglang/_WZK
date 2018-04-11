@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
@@ -56,14 +56,10 @@ namespace WZK
         /// 总的页面数量
         /// </summary>
         private int _totalPageNum = 0;
-        /// <summary>
-        /// 移动屏幕的几分之几算手势成功
-        /// </summary>
-        public float _n = 0.05f;
         private void Awake()
         {
-            DownEvent.Get(_prevButton)._action = DownPrevButton;
-            DownEvent.Get(_nextButton)._action = DownNextButton;
+            DownUpEvent.Get(_prevButton)._downAction = DownPrevButton;
+            DownUpEvent.Get(_nextButton)._downAction = DownNextButton;
             _currentPage.Init(this);
             _nextPage.Init(this);
             if (_totalItemNum != 0) Init(_totalItemNum);
@@ -103,7 +99,7 @@ namespace WZK
         /// <param name="evenData"></param>
         /// <param name="obj"></param>
         /// <param name="etl"></param>
-        private void DownPrevButton(PointerEventData evenData, GameObject obj, DownEvent etl)
+        private void DownPrevButton(PointerEventData evenData, GameObject obj, DownUpEvent etl)
         {
             DownButton(MoveState.上一页, obj.transform, etl);
         }
@@ -113,7 +109,7 @@ namespace WZK
         /// <param name="evenData"></param>
         /// <param name="obj"></param>
         /// <param name="etl"></param>
-        private void DownNextButton(PointerEventData evenData, GameObject obj, DownEvent etl)
+        private void DownNextButton(PointerEventData evenData, GameObject obj, DownUpEvent etl)
         {
             DownButton(MoveState.下一页, obj.transform, etl);
         }
@@ -123,7 +119,7 @@ namespace WZK
         /// <param name="ms"></param>
         /// <param name="tf"></param>
         /// <param name="etl"></param>
-        private void DownButton(MoveState ms, Transform tf, DownEvent etl)
+        private void DownButton(MoveState ms, Transform tf, DownUpEvent etl)
         {
             if (_isMoving) return;
             _isMoving = true;

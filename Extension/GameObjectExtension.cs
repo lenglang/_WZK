@@ -79,7 +79,7 @@ namespace WZK
             }
             Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1000f,layerIndex))
+            if (Physics.Raycast(ray, out hit, 1000f, 1 << layerIndex))
             {
                 if (hit.collider.gameObject == obj)
                 {
@@ -117,7 +117,7 @@ namespace WZK
             }
             Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1000f, layerIndex))
+            if (Physics.Raycast(ray, out hit, 1000f, 1 << layerIndex))
             {
                 if (hit.collider.gameObject == obj)
                 {
@@ -128,6 +128,37 @@ namespace WZK
                     Debug.Log(hit.collider);
                 }
                 return hit.collider.gameObject == obj;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 检测位置是否在合理区
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="camera"></param>
+        /// <param name="layerIndex"></param>
+        /// <returns></returns>
+        public static bool IsRayHit3D(Vector3 position,Camera camera = null, int layerIndex = 0)
+        {
+            Ray ray;
+            if (camera == null)
+            {
+                if (Camera.main == null)
+                {
+                    Debug.LogError("场景中缺少照射的主摄像机，将照射相机Tag设置为MainCamera或给该类_camera属性赋值照射摄像机");
+                    return false;
+                }
+                ray = new Ray(Camera.main.transform.position, position - Camera.main.transform.position);
+            }
+            else
+            {
+                ray = new Ray(camera.transform.position, position - camera.transform.position);
+            }
+            Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 1000f, 1 << layerIndex))
+            {
+                return true;
             }
             return false;
         }
