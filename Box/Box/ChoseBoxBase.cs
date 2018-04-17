@@ -127,16 +127,16 @@ namespace WZK
         /// </summary>
         private int _minPosition = 0;
         /// <summary>
-        /// 是否滚动展示
+        /// 初始化
         /// </summary>
-        /// <param name="isShow"></param>
+        /// <param name="isShow">是否滚动展示</param>
         public void Init(bool isShow = true)
         {
             int count = _itemList.Count - _num;
             _maxPosition = count;
-            if (count > 0 && isShow)
+            PanelMove(delegate
             {
-                PanelMove(delegate
+                if (count > 0 && isShow)
                 {
                     Vector3 origin = _container.localPosition;
                     Vector3 target;
@@ -152,12 +152,12 @@ namespace WZK
                     {
                         AddEvent();
                     });
-                });
-            }
-            else
-            {
-                AddEvent();
-            }
+                }
+                else
+                {
+                    AddEvent();
+                }
+            });
         }
         /// <summary>
         /// 添加事件
@@ -227,6 +227,7 @@ namespace WZK
                 _dragObject = null;
             }
             ItemStateBack();
+            _pointerId = 100;
             PanelMove(delegate
             {
                 for (int i = 0; i < _itemList.Count; i++)
@@ -238,7 +239,6 @@ namespace WZK
                 _prevButton.SetActive(false);
                 _nextButton.SetActive(false);
             }, false);
-            _pointerId = 100;
         }
         /// <summary>
         /// 按下Item
@@ -266,7 +266,7 @@ namespace WZK
             ItemStateBack();
         }
         /// <summary>
-        /// 离开
+        /// 离开面板
         /// </summary>
         /// <param name="eventData"></param>
         public void OnPointerExit(PointerEventData eventData)
@@ -379,125 +379,79 @@ namespace WZK
             Vector2 target = Vector2.zero;
             List<GameObject> tempList = new List<GameObject>();
             Vector2 p;
+            int n = 1;
+            if (_moveState == MoveState.上一个) n = -1;
             if (_isLoop)
             {
-                if (_moveState == MoveState.上一个)
+                if (_isHorizontal)
                 {
-                    if (_isHorizontal)
+                    for (int i = _itemList.Count - 1; i >= 0; i--)
                     {
-                        for (int i = _itemList.Count - 1; i >= 0; i--)
+                        if ((n==-1&&_itemList[i].transform.localPosition.x >= (_num - 1) * _moveDis)||(n==1&& _itemList[i].transform.localPosition.x <= -(_num - 1) * _moveDis))
                         {
-                            if (_itemList[i].transform.localPosition.x >= (_num - 1) * _moveDis)
-                            {
-                                tempList.Add(_itemList[i]);
-                                _itemList.RemoveAt(i);
-                            }
+                            tempList.Add(_itemList[i]);
+                            _itemList.RemoveAt(i);
                         }
-                        for (int i = 0; i < tempList.Count; i++)
+                    }
+                    for (int i = 0; i < tempList.Count; i++)
+                    {
+                        p = tempList[i].transform.localPosition;
+                        if (n == -1)
                         {
-                            p = tempList[i].transform.localPosition;
                             p.x = _itemList[0].transform.localPosition.x - _moveDis;
                             tempList[i].transform.localPosition = p;
                             _itemList.Insert(0, tempList[i]);
                         }
-                    }
-                    else
-                    {
-                        for (int i = _itemList.Count - 1; i >= 0; i--)
+                        else
                         {
-                            if (_itemList[i].transform.localPosition.y <= -(_num - 1) * _moveDis)
-                            {
-                                tempList.Add(_itemList[i]);
-                                _itemList.RemoveAt(i);
-                            }
-                        }
-                        for (int i = 0; i < tempList.Count; i++)
-                        {
-                            p = tempList[i].transform.localPosition;
-                            p.y = _itemList[0].transform.localPosition.y + _moveDis;
-                            tempList[i].transform.localPosition = p;
-                            _itemList.Insert(0, tempList[i]);
-                        }
-                    }
-                }
-                else
-                {
-                    if (_isHorizontal)
-                    {
-                        for (int i = _itemList.Count - 1; i >= 0; i--)
-                        {
-                            if (_itemList[i].transform.localPosition.x <= -(_num - 1) * _moveDis)
-                            {
-                                tempList.Add(_itemList[i]);
-                                _itemList.RemoveAt(i);
-                            }
-                        }
-
-                        for (int i = tempList.Count - 1; i >= 0; i--)
-                        {
-                            p = tempList[i].transform.localPosition;
                             p.x = _itemList[_itemList.Count - 1].transform.localPosition.x + _moveDis;
                             tempList[i].transform.localPosition = p;
                             _itemList.Add(tempList[i]);
                         }
                     }
-                    else
+                }
+                else
+                {
+                    for (int i = _itemList.Count - 1; i >= 0; i--)
                     {
-                        for (int i = _itemList.Count - 1; i >= 0; i--)
+                        if ((n==-1&&_itemList[i].transform.localPosition.y <= -(_num - 1) * _moveDis)||(n==1&&_itemList[i].transform.localPosition.y >= (_num - 1) * _moveDis))
                         {
-                            if (_itemList[i].transform.localPosition.y >= (_num - 1) * _moveDis)
-                            {
-                                tempList.Add(_itemList[i]);
-                                _itemList.RemoveAt(i);
-                            }
+                            tempList.Add(_itemList[i]);
+                            _itemList.RemoveAt(i);
                         }
-
-                        for (int i = tempList.Count - 1; i >= 0; i--)
+                    }
+                    for (int i = 0; i < tempList.Count; i++)
+                    {
+                        p = tempList[i].transform.localPosition;
+                        if (n == -1)
                         {
-                            p = tempList[i].transform.localPosition;
+                            p.y = _itemList[0].transform.localPosition.y + _moveDis;
+                            tempList[i].transform.localPosition = p;
+                            _itemList.Insert(0, tempList[i]);
+                        }
+                        else
+                        {
                             p.y = _itemList[_itemList.Count - 1].transform.localPosition.y - _moveDis;
                             tempList[i].transform.localPosition = p;
                             _itemList.Add(tempList[i]);
                         }
                     }
-
                 }
             }
             else
             {
-                if (_moveState == MoveState.上一个)
-                {
-                    _currentPosition--;
-                }
-                else
-                {
-                    _currentPosition++;
-                }
+                _currentPosition += n;
                 UpdateButton();
             }
             for (int i = 0; i < _itemList.Count; i++)
             {
-                if (_moveState == MoveState.上一个)
+                if (_isHorizontal)
                 {
-                    if (_isHorizontal)
-                    {
-                        target.x = _itemList[i].transform.localPosition.x + _moveDis;
-                    }
-                    else
-                    {
-                        target.y = _itemList[i].transform.localPosition.y - _moveDis;
-                    }
+                    target.x = _itemList[i].transform.localPosition.x - _moveDis*n;
                 }
                 else
                 {
-                    if (_isHorizontal)
-                    {
-                        target.x = _itemList[i].transform.localPosition.x - _moveDis;
-                    }
-                    else
-                    {
-                        target.y = _itemList[i].transform.localPosition.y + _moveDis;
-                    }
+                    target.y = _itemList[i].transform.localPosition.y + _moveDis*n;
                 }
                 _itemList[i].transform.DOLocalMove(target, 0.3f).SetEase(Ease.Linear);
             }

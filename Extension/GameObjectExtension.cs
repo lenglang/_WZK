@@ -77,7 +77,7 @@ namespace WZK
             {
                 ray = camera.ScreenPointToRay(position);
             }
-            Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
+            Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000f, 1 << layerIndex))
             {
@@ -115,7 +115,7 @@ namespace WZK
             {
                 ray = new Ray(camera.transform.position, position - camera.transform.position);
             }
-            Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
+            Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000f, 1 << layerIndex))
             {
@@ -154,7 +154,7 @@ namespace WZK
             {
                 ray = new Ray(camera.transform.position, position - camera.transform.position);
             }
-            Debug.DrawLine(ray.origin, ray.direction * 1000f, Color.red);
+            Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.red);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000f, 1 << layerIndex))
             {
