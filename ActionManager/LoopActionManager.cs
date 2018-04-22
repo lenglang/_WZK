@@ -5,19 +5,17 @@ namespace WZK
 {
     /// <summary>
     /// 循环动作控制
-    /// 注意全局的话，要针对某个事件在OnDestroy移除，不是全局的话，移除所有事件
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class LoopActionManager<T>
+    public class LoopActionManager:MonoBehaviour
     {
-        private static LoopActionManager<T> instance;
-        public static LoopActionManager<T> Instance
+        private static LoopActionManager instance;
+        public static LoopActionManager Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new LoopActionManager<T>();
+                    instance = (new GameObject("")).AddComponent<LoopActionManager>();
                 }
                 return instance;
             }
@@ -35,7 +33,7 @@ namespace WZK
         /// <param name="interval2">第一次间隔结束后，是否改变之后的间隔时间，默认0即不改变，其他值为下次间隔时间</param>
         /// <param name="add">增加时间</param>
         /// <param name="times">循环次数，默认-1即无限循环</param>
-        public void AddLoopAction(Action action, float interval, T type = default(T), bool isDoNow = true, float interval2 = 0, float add = 0, int times = -1)
+        public void AddLoopAction(Action action, float interval, string type, bool isDoNow = true, float interval2 = 0, float add = 0, int times = -1)
         {
             LoopActionParameter lp = new LoopActionParameter(action, interval, type, times, interval2, add);
             _loopActionParameterList.Add(lp);
@@ -45,11 +43,10 @@ namespace WZK
         /// 移除某个循环动作
         /// </summary>
         /// <param name="actionName"></param>
-        public void RemoveLoopAction(T type)
+        public void RemoveLoopAction(string type)
         {
             for (int i = 0; i < _loopActionParameterList.Count; i++)
             {
-                if (_loopActionParameterList[i]._type == null) continue;
                 if (_loopActionParameterList[i]._type.ToString() == type.ToString())
                 {
                     _loopActionParameterList.RemoveAt(i);
@@ -61,11 +58,10 @@ namespace WZK
         /// 重置时间
         /// </summary>
         /// <param name="type"></param>
-        public void ResetTime(T type)
+        public void ResetTime(string type)
         {
             for (int i = 0; i < _loopActionParameterList.Count; i++)
             {
-                if (_loopActionParameterList[i]._type == null) continue;
                 if (_loopActionParameterList[i]._type.ToString() == type.ToString())
                 {
                     _loopActionParameterList[i]._time = Time.time;
@@ -79,7 +75,6 @@ namespace WZK
         public void RemoveAllLoopAction()
         {
             _loopActionParameterList.Clear();
-            instance = null;
         }
         public void FixedUpdate()
         {
@@ -102,6 +97,10 @@ namespace WZK
                 }
             }
         }
+        private void OnDestroy()
+        {
+            instance = null;
+        }
         /// <summary>
         /// 循环动作参数类
         /// </summary>
@@ -114,8 +113,8 @@ namespace WZK
             public float _interval2;
             public float _add;
             public float _countTimes = 0;
-            public T _type;
-            public LoopActionParameter(Action action, float interval, T type, int times, float interval2, float add)
+            public string _type;
+            public LoopActionParameter(Action action, float interval, string type, int times, float interval2, float add)
             {
                 _action = action;
                 _interval = interval;

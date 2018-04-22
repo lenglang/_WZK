@@ -5,19 +5,17 @@ namespace WZK
 {
     /// <summary>
     /// 等待动作控制
-    /// 注意全局的话，要针对某个事件在OnDestroy移除，不是全局的话，移除所以事件
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class WaitActionManager<T>
+    public class WaitActionManager:MonoBehaviour
     {
-        private static WaitActionManager<T> instance;
-        public static WaitActionManager<T> Instance
+        private static WaitActionManager instance;
+        public static WaitActionManager Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new WaitActionManager<T>();
+                    instance = (new GameObject("WaitActionManager")).AddComponent<WaitActionManager>();
                 }
                 return instance;
             }
@@ -32,7 +30,7 @@ namespace WZK
         /// <param name="type">动作类型</param>
         /// <param name="action">动作</param>
         /// <param name="waitTime">等待时间</param>
-        public void AddWaitAction(Action action, float waitTime, T type = default(T))
+        public void AddWaitAction(Action action, float waitTime, string type="")
         {
             WaitActionParameter wp = new WaitActionParameter(action, waitTime,type);
             _waitActionParameterList.Add(wp);
@@ -41,12 +39,11 @@ namespace WZK
         /// 移除等待动作
         /// </summary>
         /// <param name="type">动作类型</param>
-        public void RemoveWaitAction(T type)
+        public void RemoveWaitAction(string type)
         {
             for (int i = 0; i < _waitActionParameterList.Count; i++)
             {
-                if (_waitActionParameterList[i]._type == null) continue;
-                if (_waitActionParameterList[i]._type.ToString() == type.ToString())
+                if (_waitActionParameterList[i]._type== type)
                 {
                     _waitActionParameterList.RemoveAt(i);
                     break;
@@ -59,27 +56,30 @@ namespace WZK
         public void RemoveAllWaitAction()
         {
             _waitActionParameterList.Clear();
-            instance = null;
         }
         public void FixedUpdate()
         {
-
+            float time = Time.time;
             for (int i = _waitActionParameterList.Count-1; i>=0; i--)
             {
-                if (Time.time - _waitActionParameterList[i]._time >= _waitActionParameterList[i]._waitTime)
+                if (time - _waitActionParameterList[i]._time >= _waitActionParameterList[i]._waitTime)
                 {
                     _waitActionParameterList[i]._action();
                     _waitActionParameterList.RemoveAt(i);
                 }
             }
         }
+        private void OnDestroy()
+        {
+            instance = null;
+        }
         public class WaitActionParameter
         {
             public Action _action;
             public float _time;
             public float _waitTime;
-            public T _type;
-            public WaitActionParameter(Action action, float waitTime, T type)
+            public string _type;
+            public WaitActionParameter(Action action, float waitTime, string type)
             {
                 _action = action;
                 _waitTime = waitTime;
