@@ -1,5 +1,4 @@
-﻿using DG.Tweening;
-using System;
+﻿using System;
 using UnityEngine;
 namespace WZK
 {
@@ -53,14 +52,16 @@ namespace WZK
             _action2 = action2;
             _cTiling = _bTiling;
             _cOffset = _bOffset;
-            DOTween.To(() => _cTiling, x => _cTiling = x, _sTiling, 0.8f).OnUpdate(() => UpdateTiling(_cTiling)).SetEase(Ease.OutQuad);
-            DOTween.To(() => _cOffset, x => _cOffset = x, _sOffset, 0.8f).OnUpdate(() => UpdateOffset(_cOffset)).SetEase(Ease.OutQuad).OnComplete(ToBig);
+            //标记
+            //DOTween.To(() => _cTiling, x => _cTiling = x, _sTiling, 0.8f).OnUpdate(() => UpdateTiling(_cTiling)).SetEase(Ease.OutQuad);
+            //DOTween.To(() => _cOffset, x => _cOffset = x, _sOffset, 0.8f).OnUpdate(() => UpdateOffset(_cOffset)).SetEase(Ease.OutQuad).OnComplete(ToBig);
         }
         private void ToBig()
         {
             if (_action1 != null) _action1();
-            DOTween.To(() => _cTiling, x => _cTiling = x, _bTiling, 1f).OnUpdate(() => UpdateTiling(_cTiling)).SetEase(Ease.InQuad);
-            DOTween.To(() => _cOffset, x => _cOffset = x, _bOffset, 1f).OnUpdate(() => UpdateOffset(_cOffset)).SetEase(Ease.InQuad).OnComplete(delegate { if (_action2 != null) _action2(); gameObject.SetActive(false); });
+            //标记
+            //DOTween.To(() => _cTiling, x => _cTiling = x, _bTiling, 1f).OnUpdate(() => UpdateTiling(_cTiling)).SetEase(Ease.InQuad);
+            //DOTween.To(() => _cOffset, x => _cOffset = x, _bOffset, 1f).OnUpdate(() => UpdateOffset(_cOffset)).SetEase(Ease.InQuad).OnComplete(delegate { if (_action2 != null) _action2(); gameObject.SetActive(false); });
         }
         private void UpdateTiling(float tiling)
         {

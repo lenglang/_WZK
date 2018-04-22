@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using DG.Tweening;
 using System;
-
 namespace WZK
 {
     public class ButtonEffect : MonoBehaviour
@@ -15,8 +13,9 @@ namespace WZK
         /// <param name="time">缩放时间</param>
         public static void Scale(Transform tf, Action complete = null,float n=1.2f,float time=0.12f)
         {
-            Vector3 scale = tf.transform.localScale * n;
-            tf.DOScale(scale, time).SetLoops(2, LoopType.Yoyo).SetEase(Ease.Linear).OnComplete(delegate { if (complete != null) complete(); });
+            //标记
+            //Vector3 scale = tf.transform.localScale * n;
+            //tf.DOScale(scale, time).SetLoops(2, LoopType.Yoyo).SetEase(Ease.Linear).OnComplete(delegate { if (complete != null) complete(); });
         }
     }
 }

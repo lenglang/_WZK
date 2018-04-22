@@ -12,11 +12,8 @@ public class Body : Composite
         Vector2 parentPosition = new Vector2(myParent.transform.localPosition.x, myParent.transform.localPosition.z);
         Vector2 myPosition = new Vector2(transform.localPosition.x, transform.localPosition.z);
 
-        float angle = MathTool.GetAngle2(myPosition, parentPosition);
-        Vector3 rotation = transform.localEulerAngles;
-        rotation.y = angle;
-
-        //transform.localEulerAngles = rotation;
+        //标记
+        //float angle = MathTool.GetAngle2(myPosition, parentPosition);
         transform.LookAt(myParent.transform);
 
         float distance = Vector3.Distance(myPosition, parentPosition);
@@ -26,8 +23,6 @@ public class Body : Composite
         mp.z = myPosition.y;
         mp.y = transform.localPosition.y;
         transform.position = mp;
-        //float scale = 1 - _index * 0.1f;
-        //transform.localScale = new Vector3(scale,scale,scale);
         base.UpdatePosition();
     }
 }

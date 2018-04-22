@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using DG.Tweening;
 namespace WZK
 {
     /// <summary>
@@ -138,14 +137,15 @@ namespace WZK
             UpdateButton();
             _nextPage.RefreshData();
             _nextPage.transform.SetLocalX(_currentPage.transform.localPosition.x - dir * _moveDis);
-            _nextPage.transform.DOLocalMoveX(_nextPage.transform.localPosition.x + dir * _moveDis, 0.3f);
-            _currentPage.transform.DOLocalMoveX(_currentPage.transform.localPosition.x + dir * _moveDis, 0.3f).OnComplete(delegate 
-            {
-                Page temp = _currentPage;
-                _currentPage = _nextPage;
-                _nextPage = temp;
-                _isMoving = false;
-            });
+            //标记
+            //_nextPage.transform.DOLocalMoveX(_nextPage.transform.localPosition.x + dir * _moveDis, 0.3f);
+            //_currentPage.transform.DOLocalMoveX(_currentPage.transform.localPosition.x + dir * _moveDis, 0.3f).OnComplete(delegate 
+            //{
+            //    Page temp = _currentPage;
+            //    _currentPage = _nextPage;
+            //    _nextPage = temp;
+            //    _isMoving = false;
+            //});
         }
         /// <summary>
         /// 更新按钮状态

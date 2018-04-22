@@ -5,7 +5,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using DG.Tweening;
 using System;
 namespace WZK
 {
@@ -148,10 +147,11 @@ namespace WZK
                     {
                         target = new Vector3(origin.x, count * _moveDis + origin.y, 0);
                     }
-                    _container.DOLocalMove(target, count * 0.3f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo).OnComplete(delegate
-                    {
-                        AddEvent();
-                    });
+                    //标记
+                    //_container.DOLocalMove(target, count * 0.3f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo).OnComplete(delegate
+                    //{
+                    //    AddEvent();
+                    //});
                 }
                 else
                 {
@@ -210,10 +210,11 @@ namespace WZK
                 if (isIn) target.y *= -1;
                 target.y += _panel.transform.localPosition.y;
             }
-            _panel.DOLocalMove(target, 0.5f).OnComplete(delegate
-            {
-                if (complete != null) complete();
-            });
+            //标记
+            //_panel.DOLocalMove(target, 0.5f).OnComplete(delegate
+            //{
+            //    if (complete != null) complete();
+            //});
         }
         /// <summary>
         /// 隐藏面板
@@ -453,7 +454,8 @@ namespace WZK
                 {
                     target.y = _itemList[i].transform.localPosition.y + _moveDis*n;
                 }
-                _itemList[i].transform.DOLocalMove(target, 0.3f).SetEase(Ease.Linear);
+                //标记
+                //_itemList[i].transform.DOLocalMove(target, 0.3f).SetEase(Ease.Linear);
             }
             tempList.Clear();
             this.InvokeWaitForSeconds(delegate
