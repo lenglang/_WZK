@@ -1,0 +1,162 @@
+fileFormatVersion: 2
+guid: 25c21752040631c4b9327d62b099ebc3
+timeCreated: 1514509781
+licenseType: Pro
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Cylinder001
+    100002: Point001
+    100004: Point002
+    100006: Point003
+    100008: Point004
+    100010: Point005
+    100012: Point006
+    100014: Point007
+    100016: Point008
+    100018: Point009
+    100020: Point010
+    100022: Point011
+    100024: Point012
+    100026: Point013
+    100028: Point014
+    100030: Point015
+    100032: Point016
+    100034: Point017
+    100036: Point018
+    100038: Point019
+    100040: Point020
+    100042: Point021
+    100044: Point022
+    100046: Point023
+    100048: Point024
+    100050: Point025
+    100052: Point026
+    100054: Point027
+    100056: Point028
+    100058: Point029
+    100060: Point030
+    100062: Point031
+    100064: Point032
+    100066: Point033
+    100068: Point034
+    100070: Point035
+    100072: Point036
+    100074: Point037
+    100076: Point038
+    100078: Point039
+    100080: Point040
+    100082: Point041
+    100084: Point042
+    100086: //RootNode
+    400000: Cylinder001
+    400002: Point001
+    400004: Point002
+    400006: Point003
+    400008: Point004
+    400010: Point005
+    400012: Point006
+    400014: Point007
+    400016: Point008
+    400018: Point009
+    400020: Point010
+    400022: Point011
+    400024: Point012
+    400026: Point013
+    400028: Point014
+    400030: Point015
+    400032: Point016
+    400034: Point017
+    400036: Point018
+    400038: Point019
+    400040: Point020
+    400042: Point021
+    400044: Point022
+    400046: Point023
+    400048: Point024
+    400050: Point025
+    400052: Point026
+    400054: Point027
+    400056: Point028
+    400058: Point029
+    400060: Point030
+    400062: Point031
+    400064: Point032
+    400066: Point033
+    400068: Point034
+    400070: Point035
+    400072: Point036
+    400074: Point037
+    400076: Point038
+    400078: Point039
+    400080: Point040
+    400082: Point041
+    400084: Point042
+    400086: //RootNode
+    4300000: Cylinder001
+    9500000: //RootNode
+    13700000: Cylinder001
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
